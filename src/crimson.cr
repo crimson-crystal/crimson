@@ -18,6 +18,8 @@ module Crimson
     def setup : Nil
       @name = "app"
       @header = %(#{"Crimson".colorize.red} • #{"A Crystal Toolchain Manager".colorize.light_red})
+
+      add_command Commands::Version.new
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
