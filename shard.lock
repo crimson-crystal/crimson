@@ -1,0 +1,10 @@
+version: 2.0
+shards:
+  ameba:
+    git: https://github.com/crystal-ameba/ameba.git
+    version: 1.5.0
+
+  cling:
+    git: https://github.com/devnote-dev/cling.git
+    version: 3.0.0+git.commit.c8975969bab1104be2ff9d715f2197dee6e4dd18
+
