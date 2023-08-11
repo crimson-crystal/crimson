@@ -20,4 +20,4 @@ development_dependencies:
 
 targets:
   crimson:
-    main: src/crimson.cr
+    main: src/main.cr
