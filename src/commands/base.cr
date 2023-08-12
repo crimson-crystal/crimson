@@ -13,7 +13,7 @@ module Crimson::Commands
         if header
           io << header << "\n\n"
         else
-          io << "Crimson: " << name << '\n'
+          io << "Command ".colorize.red << name << "\n\n"
         end
 
         if description
@@ -67,6 +67,18 @@ module Crimson::Commands
           io << " " * (max_size - name_size)
           io << option.description << '\n'
         end
+      end
+    end
+
+    def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
+      Colorize.enabled = false if options.has? "no-color"
+
+      if options.has? "help"
+        stdout.puts help_template
+
+        false
+      else
+        true
       end
     end
 
