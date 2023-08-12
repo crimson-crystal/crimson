@@ -69,5 +69,62 @@ module Crimson::Commands
         end
       end
     end
+
+    def on_error(ex : Exception) : Nil
+      case ex
+      when Cling::CommandError
+        error [ex.to_s, "See 'crimson --help' for more information"]
+      when Cling::ExecutionError
+        error [ex.to_s, "See 'crimson #{self.name} --help' for more information"]
+      else
+        error [
+          "Unexpected exception:",
+          ex.to_s,
+          "Please report this on the Crimson GitHub issues:",
+          "https://github.com/devnote-dev/crimson/issues",
+        ]
+      end
+    end
+
+    def on_missing_arguments(args : Array(String))
+      error [
+        "Missing required argument#{"s" if args.size > 1}: #{args.join(", ")}",
+        "See 'crimson #{self.name} --help' for more information",
+      ]
+    end
+
+    def on_unknown_arguments(args : Array(String))
+      error [
+        "Unexpected argument#{"s" if args.size > 1}: #{args.join(", ")}",
+        "See 'crimson #{self.name} --help' for more information",
+      ]
+    end
+
+    def on_unknown_options(options : Array(String))
+      error [
+        "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}",
+        "See 'crimson #{self.name} --help' for more information",
+      ]
+    end
+
+    protected def info(data : String) : Nil
+      stdout << "(i) ".colorize.blue << data << '\n'
+    end
+
+    protected def warn(data : String) : Nil
+      stdout << "(!) ".colorize.yellow << data << '\n'
+    end
+
+    protected def warn(data : Array(String)) : Nil
+      data.each &->warn(String)
+    end
+
+    protected def error(data : String) : Nil
+      stderr << "(!) ".colorize.red << data << '\n'
+    end
+
+    protected def error(data : Array(String)) : Nil
+      data.each &->error(String)
+    end
   end
 end
