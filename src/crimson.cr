@@ -1,5 +1,6 @@
 require "cling"
 require "colorize"
+require "crest"
 
 require "./commands/*"
 require "./env"
@@ -21,6 +22,7 @@ module Crimson
       @header = %(#{"Crimson".colorize.red} • #{"A Crystal Toolchain Manager".colorize.light_red})
 
       add_command Commands::Setup.new
+      add_command Commands::Install.new
       add_command Commands::Version.new
     end
 
