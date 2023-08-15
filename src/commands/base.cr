@@ -29,11 +29,11 @@ module Crimson::Commands
     def on_error(ex : Exception) : Nil
       case ex
       when Cling::CommandError
-        error ex.to_s
-        error "See 'crimson --help' for more information"
+        on_invalid_option ex.to_s
       when Cling::ExecutionError
         error ex.to_s
-        error "See 'crimson #{self.name} --help' for more information"
+        command = "crimson #{self.name} --help".colorize.bold
+        error "See '#{command}' for more information"
       when SystemExit
         # skip
       else
@@ -53,19 +53,28 @@ module Crimson::Commands
 
     def on_missing_arguments(args : Array(String))
       error "Missing required argument#{"s" if args.size > 1}: #{args.join(", ")}"
-      error "See 'crimson #{self.name} --help' for more information"
+      command = "crimson #{self.name} --help".colorize.bold
+      error "See '#{command}' for more information"
       exit 1
     end
 
     def on_unknown_arguments(args : Array(String))
       error "Unexpected argument#{"s" if args.size > 1}: #{args.join(", ")}"
-      error "See 'crimson #{self.name} --help' for more information"
+      command = "crimson #{self.name} --help".colorize.bold
+      error "See '#{command}' for more information"
       exit 1
+    end
+
+    def on_invalid_option(message : String)
+      error message
+      command = self.name == "app" ? "crimson --help" : "crimson #{self.name} --help"
+      error "See '#{command.colorize.bold}' for more information"
     end
 
     def on_unknown_options(options : Array(String))
       error "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}"
-      error "See 'crimson #{self.name} --help' for more information"
+      command = "crimson #{self.name} --help".colorize.bold
+      error "See '#{command}' for more information"
       exit 1
     end
 
