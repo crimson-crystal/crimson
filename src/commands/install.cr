@@ -22,12 +22,12 @@ module Crimson::Commands
         error "Crystal version #{version} is already installed"
         command = "crimson switch #{version}".colorize.bold
         notice "To use it run '#{command}'"
-        return
+        system_exit
       end
 
       unless ENV.get_versions(false).includes? version
         error "Unknown Crystal version: #{version}"
-        return
+        system_exit
       end
 
       path = ENV::CRIMSON_LIBRARY / "crystal" / version
@@ -40,7 +40,7 @@ module Crimson::Commands
         error "Failed to create directory:"
         error "Location: #{path}"
         error ex.to_s
-        return
+        system_exit
       end
     end
   end

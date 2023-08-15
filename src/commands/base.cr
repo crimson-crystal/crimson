@@ -34,6 +34,8 @@ module Crimson::Commands
       when Cling::ExecutionError
         error ex.to_s
         error "See 'crimson #{self.name} --help' for more information"
+      when SystemExit
+        # skip
       else
         error "Unexpected exception:"
         error ex.to_s
@@ -45,21 +47,30 @@ module Crimson::Commands
           trace.each { |line| error line }
         end
       end
+
+      exit 1
     end
 
     def on_missing_arguments(args : Array(String))
       error "Missing required argument#{"s" if args.size > 1}: #{args.join(", ")}"
       error "See 'crimson #{self.name} --help' for more information"
+      exit 1
     end
 
     def on_unknown_arguments(args : Array(String))
       error "Unexpected argument#{"s" if args.size > 1}: #{args.join(", ")}"
       error "See 'crimson #{self.name} --help' for more information"
+      exit 1
     end
 
     def on_unknown_options(options : Array(String))
       error "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}"
       error "See 'crimson #{self.name} --help' for more information"
+      exit 1
+    end
+
+    def system_exit : NoReturn
+      raise SystemExit.new
     end
 
     protected def verbose(& : -> String) : Nil
