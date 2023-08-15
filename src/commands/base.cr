@@ -3,6 +3,7 @@ module Crimson::Commands
     def initialize
       super
 
+      @verbose = false
       @inherit_options = true
       add_option "no-color", description: "disable ansi color formatting"
       add_option 'h', "help", description: "get help information"
@@ -72,6 +73,7 @@ module Crimson::Commands
 
     def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
       Colorize.enabled = false if options.has? "no-color"
+      @verbose = true if options.has? "verbose"
 
       if options.has? "help"
         stdout.puts help_template
@@ -117,6 +119,11 @@ module Crimson::Commands
         "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}",
         "See 'crimson #{self.name} --help' for more information",
       ]
+    end
+
+    protected def verbose(& : -> String) : Nil
+      return unless @verbose
+      stdout << yield << '\n'
     end
 
     protected def info(data : String) : Nil
