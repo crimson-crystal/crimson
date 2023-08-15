@@ -2,7 +2,7 @@ module Crimson::Commands
   class Version < Base
     def setup : Nil
       @name = "version"
-      @summary = "gets version information"
+      @summary = "get version information"
       @description = "Gets the version information about Crimson."
 
       add_usage "version"

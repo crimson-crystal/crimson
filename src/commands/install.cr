@@ -2,10 +2,9 @@ module Crimson::Commands
   class Install < Base
     def setup : Nil
       @name = "install"
-      @summary = "installs a tool"
+      @summary = "install a version of crystal"
 
-      add_usage "install [-d|--default] [-f|--force] [-v|--verbose] <tool> [version]"
-      add_argument "tool", required: true
+      add_usage "install [-d|--default] [-f|--force] [-v|--verbose] [version]"
       add_argument "version"
       add_option 'd', "default"
       add_option 'f', "force"
@@ -13,11 +12,6 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-      unless arguments.get("tool") == "crystal"
-        error "Only Crystal is supported currently"
-        return
-      end
-
       version = arguments.get?("version").try &.as_s
       unless version
         verbose { "fetching available versions" }
@@ -26,7 +20,7 @@ module Crimson::Commands
 
       if ENV.has_version? version
         error "Crystal version #{version} is already installed"
-        error "To use it run 'crimson switch crystal #{version}'"
+        error "To use it run 'crimson switch #{version}'"
         return
       end
 
