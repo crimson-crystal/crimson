@@ -23,7 +23,7 @@ module Crimson::Commands
           unless File.info(path).type.symlink?
             warn [
               "Crystal appears to be installed without Crimson",
-              "Please uninstall it before attempting to install with Crimson"
+              "Please uninstall it before attempting to install with Crimson",
             ]
           end
         end
