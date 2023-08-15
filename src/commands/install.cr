@@ -20,7 +20,8 @@ module Crimson::Commands
 
       if ENV.has_version? version
         error "Crystal version #{version} is already installed"
-        error "To use it run 'crimson switch #{version}'"
+        command = "crimson switch #{version}".colorize.bold
+        notice "To use it run '#{command}'"
         return
       end
 

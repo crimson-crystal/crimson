@@ -10,65 +10,7 @@ module Crimson::Commands
     end
 
     def help_template : String
-      String.build do |io|
-        if header
-          io << header << "\n\n"
-        else
-          io << "Command ".colorize.red << name << "\n\n"
-        end
-
-        if description
-          io << description << "\n\n"
-        end
-
-        unless usage.empty?
-          io << "Usage".colorize.red << '\n'
-          usage.each do |use|
-            io << "• " << use << '\n'
-          end
-          io << '\n'
-        end
-
-        unless children.empty?
-          io << "Commands".colorize.red << '\n'
-          max_size = 4 + children.keys.max_of &.size
-
-          children.each do |name, cmd|
-            io << "• " << name
-            if summary = cmd.summary
-              io << " " * (max_size - name.size)
-              io << summary
-            end
-            io << '\n'
-          end
-          io << '\n'
-        end
-
-        unless arguments.empty?
-          io << "Arguments".colorize.red << '\n'
-          arguments.each do |name, argument|
-            io << "• " << name << '\t' << argument.description
-            io << " (required)" if argument.required?
-            io << '\n'
-          end
-          io << '\n'
-        end
-
-        io << "Options".colorize.red << '\n'
-        max_size = 2 + options.max_of { |n, o| 2 + n.size + (o.short ? 2 : 0) }
-
-        options.each do |name, option|
-          name_size = 2 + option.long.size + (option.short ? 2 : -2)
-
-          io << "• "
-          if short = option.short
-            io << '-' << short << ", "
-          end
-          io << "--" << name
-          io << " " * (max_size - name_size)
-          io << option.description << '\n'
-        end
-      end
+      Commands.generate_template self
     end
 
     def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
@@ -87,38 +29,37 @@ module Crimson::Commands
     def on_error(ex : Exception) : Nil
       case ex
       when Cling::CommandError
-        error [ex.to_s, "See 'crimson --help' for more information"]
+        error ex.to_s
+        error "See 'crimson --help' for more information"
       when Cling::ExecutionError
-        error [ex.to_s, "See 'crimson #{self.name} --help' for more information"]
+        error ex.to_s
+        error "See 'crimson #{self.name} --help' for more information"
       else
-        error [
-          "Unexpected exception:",
-          ex.to_s,
-          "Please report this on the Crimson GitHub issues:",
-          "https://github.com/devnote-dev/crimson/issues",
-        ]
+        error "Unexpected exception:"
+        error ex.to_s
+        error "Please report this on the Crimson GitHub issues:"
+        error "https://github.com/devnote-dev/crimson/issues"
+
+        if @verbose
+          trace = ex.backtrace || %w[???]
+          trace.each { |line| error line }
+        end
       end
     end
 
     def on_missing_arguments(args : Array(String))
-      error [
-        "Missing required argument#{"s" if args.size > 1}: #{args.join(", ")}",
-        "See 'crimson #{self.name} --help' for more information",
-      ]
+      error "Missing required argument#{"s" if args.size > 1}: #{args.join(", ")}"
+      error "See 'crimson #{self.name} --help' for more information"
     end
 
     def on_unknown_arguments(args : Array(String))
-      error [
-        "Unexpected argument#{"s" if args.size > 1}: #{args.join(", ")}",
-        "See 'crimson #{self.name} --help' for more information",
-      ]
+      error "Unexpected argument#{"s" if args.size > 1}: #{args.join(", ")}"
+      error "See 'crimson #{self.name} --help' for more information"
     end
 
     def on_unknown_options(options : Array(String))
-      error [
-        "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}",
-        "See 'crimson #{self.name} --help' for more information",
-      ]
+      error "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}"
+      error "See 'crimson #{self.name} --help' for more information"
     end
 
     protected def verbose(& : -> String) : Nil
@@ -127,23 +68,19 @@ module Crimson::Commands
     end
 
     protected def info(data : String) : Nil
-      stdout << "(i) ".colorize.blue << data << '\n'
+      stdout << data << '\n'
+    end
+
+    protected def notice(data : String) : Nil
+      stdout << "notice".colorize.cyan << ": " << data << '\n'
     end
 
     protected def warn(data : String) : Nil
-      stdout << "(!) ".colorize.yellow << data << '\n'
-    end
-
-    protected def warn(data : Array(String)) : Nil
-      data.each &->warn(String)
+      stdout << "warn".colorize.yellow << ": " << data << '\n'
     end
 
     protected def error(data : String) : Nil
-      stderr << "(!) ".colorize.red << data << '\n'
-    end
-
-    protected def error(data : Array(String)) : Nil
-      data.each &->error(String)
+      stderr << "error".colorize.red << ": " << data << '\n'
     end
   end
 end
