@@ -88,7 +88,7 @@ module Crimson::Commands
     end
 
     protected def info(data : String) : Nil
-      stdout << data << '\n'
+      stdout.puts data
     end
 
     protected def notice(data : String) : Nil

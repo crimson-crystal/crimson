@@ -4,10 +4,11 @@ module Crimson::Commands
       @name = "install"
       @summary = "install a version of crystal"
 
-      add_usage "install [-d|--default] [-f|--force] [-v|--verbose] [version]"
+      add_usage "install [-a|--alias <name>] [-f|--fetch] [-s|--switch] [-v|--verbose] [version]"
       add_argument "version"
-      add_option 'd', "default"
-      add_option 'f', "force"
+      add_option 'a', "alias", type: :single
+      add_option 'f', "fetch"
+      add_option 's', "switch"
       add_option 'v', "verbose"
     end
 
@@ -15,7 +16,7 @@ module Crimson::Commands
       version = arguments.get?("version").try &.as_s
       unless version
         verbose { "fetching available versions" }
-        version = ENV.get_versions(options.has?("force"))[1]
+        version = ENV.get_versions(options.has?("fetch"))[1]
       end
 
       if ENV.has_version? version
