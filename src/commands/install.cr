@@ -50,13 +50,17 @@ module Crimson::Commands
       end
 
       verbose { "creating destination file" }
-      archive = File.open(path / "crystal-#{version}.tar.gz", mode: "w+")
+      archive = File.open(path / "crystal-#{version}.tar.gz", mode: "w")
       verbose { "location: #{archive.path}" }
 
       source = "https://github.com/crystal-lang/crystal/releases/download/#{version}/crystal-#{version}-#{ENV::HOST_TARGET}.tar.gz"
       info "Downloading sources..."
       verbose { source }
-      Crest.get(source) { |res| IO.copy res.body_io, archive }
+
+      Crest.get source do |res|
+        IO.copy res.body_io, archive
+        archive.close
+      end
 
       info "Unpacking archive to destination..."
       count = 0i32
@@ -66,8 +70,6 @@ module Crimson::Commands
         Crystar::Reader.open(gzip) do |tar|
           tar.each_entry do |entry|
             dest = path / Path[entry.name].parts[1..].join(File::SEPARATOR)
-            verbose { dest.to_s }
-
             if entry.flag == 53 # check directories
               Dir.mkdir_p dest
               next
