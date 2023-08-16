@@ -1,6 +1,7 @@
 require "cling"
 require "colorize"
 require "crest"
+require "crystar"
 
 require "./commands/*"
 require "./env"

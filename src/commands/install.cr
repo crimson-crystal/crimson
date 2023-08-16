@@ -14,7 +14,12 @@ module Crimson::Commands
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       version = arguments.get?("version").try &.as_s
-      unless version
+      if version
+        unless version =~ /\d\.\d\.\d/
+          error "Invalid version format (must be major.minor.patch)"
+          system_exit
+        end
+      else
         verbose { "fetching available versions" }
         version = ENV.get_versions(options.has?("fetch"))[1]
       end
@@ -42,6 +47,46 @@ module Crimson::Commands
         error "Location: #{path}"
         error ex.to_s
         system_exit
+      end
+
+      verbose { "creating destination file" }
+      archive = File.open(path / "crystal-#{version}.tar.gz", mode: "w+")
+      verbose { "location: #{archive.path}" }
+
+      source = "https://github.com/crystal-lang/crystal/releases/download/#{version}/crystal-#{version}-#{ENV::HOST_TARGET}.tar.gz"
+      info "Downloading sources..."
+      verbose { source }
+      Crest.get(source) { |res| IO.copy res.body_io, archive }
+
+      info "Unpacking archive to destination..."
+      count = 0i32
+      size = 0i64
+
+      Compress::Gzip::Reader.open(archive.path) do |gzip|
+        Crystar::Reader.open(gzip) do |tar|
+          tar.each_entry do |entry|
+            dest = path / Path[entry.name].parts[1..].join(File::SEPARATOR)
+            verbose { dest.to_s }
+
+            if entry.flag == 53 # check directories
+              Dir.mkdir_p dest
+              next
+            end
+
+            File.open(dest, mode: "w") do |file|
+              IO.copy entry.io, file
+              count += 1
+              size += entry.size
+            end
+          end
+        end
+      end
+
+      info "Unpacked #{count} files (#{size.humanize_bytes})"
+    ensure
+      if arc = archive
+        arc.close unless arc.closed?
+        arc.delete
       end
     end
   end
