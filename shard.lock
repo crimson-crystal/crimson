@@ -12,6 +12,10 @@ shards:
     git: https://github.com/mamantoha/crest.git
     version: 1.3.12
 
+  crystar:
+    git: https://github.com/naqvis/crystar.git
+    version: 0.3.1
+
   http-client-digest_auth:
     git: https://github.com/mamantoha/http-client-digest_auth.git
     version: 0.6.0

@@ -16,6 +16,9 @@ dependencies:
   crest:
     github: mamantoha/crest
 
+  crystar:
+    github: naqvis/crystar
+
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
