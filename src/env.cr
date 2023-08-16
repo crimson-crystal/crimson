@@ -27,6 +27,14 @@ module Crimson::ENV
     {% end %}
   end
 
+  HOST_TARGET = {% if flag?(:win32) %}
+                  "windows-x86_64-msvc-unsupported"
+                {% elsif flag?(:darwin) %}
+                  "1-darwin-universal"
+                {% else %}
+                  "1-linux-x86_64"
+                {% end %}
+
   def self.has_version?(version : String) : Bool
     Dir.exists? CRIMSON_LIBRARY / "crystal" / version
   end
