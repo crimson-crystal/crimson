@@ -3,8 +3,10 @@ require "colorize"
 require "compress/gzip"
 require "crest"
 require "crystar"
+require "yaml"
 
 require "./commands/*"
+require "./config"
 require "./env"
 
 module Crimson
@@ -24,6 +26,7 @@ module Crimson
       @header = %(#{"Crimson".colorize.red} • #{"A Crystal Toolchain Manager".colorize.light_red})
 
       add_command Commands::Setup.new
+      add_command Commands::Env.new
       add_command Commands::Install.new
       add_command Commands::Version.new
     end
