@@ -63,6 +63,7 @@ module Crimson::Commands
       end
 
       info "Unpacking archive to destination..."
+      stdout << "\e[?25l0 files unpacked\r"
       count = 0i32
       size = 0i64
 
@@ -80,11 +81,13 @@ module Crimson::Commands
               count += 1
               size += entry.size
             end
+
+            stdout << "#{count} files unpacked (#{size.humanize_bytes})\r"
           end
         end
       end
 
-      info "Unpacked #{count} files (#{size.humanize_bytes})"
+      info "#{count} files unpacked (#{size.humanize_bytes})\e[?25h"
     ensure
       if arc = archive
         arc.close unless arc.closed?
