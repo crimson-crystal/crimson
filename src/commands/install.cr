@@ -21,17 +21,17 @@ module Crimson::Commands
         end
       else
         verbose { "fetching available versions" }
-        version = ENV.get_versions(options.has?("fetch"))[1]
+        version = ENV.get_available_versions(options.has?("fetch"))[1]
       end
 
-      if ENV.has_version? version
+      if ENV.installed? version
         error "Crystal version #{version} is already installed"
         command = "crimson switch #{version}".colorize.bold
         notice "To use it run '#{command}'"
         system_exit
       end
 
-      unless ENV.get_versions(false).includes? version
+      unless ENV.get_available_versions(false).includes? version
         error "Unknown Crystal version: #{version}"
         system_exit
       end

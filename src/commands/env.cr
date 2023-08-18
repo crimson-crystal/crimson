@@ -8,6 +8,7 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      # TODO: remove warning messages
       config = begin
         Config.load
       rescue File::NotFoundError
@@ -19,6 +20,7 @@ module Crimson::Commands
       end
 
       stdout << "Library:   " << ENV::LIBRARY << '\n'
+      # TODO: it's not really a config, should rename to something else
       stdout << "Location:  " << ENV::LIBRARY / "config.yml" << '\n'
       stdout << "Target:    " << ENV::HOST_TARGET << '\n'
       stdout << "Current:   "
@@ -32,10 +34,11 @@ module Crimson::Commands
       end
 
       stdout << "Installed: "
-      if config.installed.empty?
+      installed = ENV.get_installed_versions
+      if installed.empty?
         stdout << "none\n"
       else
-        config.installed.each { |version| stdout << "\n- " << version }
+        installed.each { |version| stdout << "\n• " << version }
         stdout << '\n'
       end
     end
