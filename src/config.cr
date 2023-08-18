@@ -7,14 +7,14 @@ module Crimson
     property aliases : Hash(String, String) = {} of String => String
 
     def self.load : self
-      from_yaml File.read ENV::CRIMSON_LIBRARY / "config.yml"
+      from_yaml File.read ENV::LIBRARY / "config.yml"
     end
 
     def initialize(@current)
     end
 
     def save : Nil
-      File.write ENV::CRIMSON_LIBRARY / "config.yml", to_yaml
+      File.write ENV::LIBRARY / "config.yml", to_yaml
     end
   end
 end

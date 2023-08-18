@@ -18,8 +18,8 @@ module Crimson::Commands
         Config.new nil
       end
 
-      stdout << "Library:   " << ENV::CRIMSON_LIBRARY << '\n'
-      stdout << "Location:  " << ENV::CRIMSON_LIBRARY / "config.yml" << '\n'
+      stdout << "Library:   " << ENV::LIBRARY << '\n'
+      stdout << "Location:  " << ENV::LIBRARY / "config.yml" << '\n'
       stdout << "Target:    " << ENV::HOST_TARGET << '\n'
       stdout << "Current:   "
 

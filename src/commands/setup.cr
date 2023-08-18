@@ -9,15 +9,9 @@ module Crimson::Commands
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       verbose { "checking crimson library path" }
-      unless Dir.exists? ENV::CRIMSON_LIBRARY
+      unless Dir.exists? ENV::LIBRARY
         verbose { "creating crimson library path" }
-        Dir.mkdir_p ENV::CRIMSON_LIBRARY
-      end
-
-      verbose { "checking crystal cache path" }
-      unless Dir.exists? ENV::CRYSTAL_CACHE
-        verbose { "creating crimson cache path" }
-        Dir.mkdir_p ENV::CRYSTAL_CACHE
+        Dir.mkdir_p ENV::LIBRARY
       end
 
       if path = Process.find_executable "crystal"

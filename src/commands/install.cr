@@ -36,7 +36,7 @@ module Crimson::Commands
         system_exit
       end
 
-      path = ENV::CRIMSON_LIBRARY / "crystal" / version
+      path = ENV::LIBRARY / "crystal" / version
       info "Installing Crystal version: #{version}"
       verbose { "ensuring directory: #{path}" }
 

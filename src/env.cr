@@ -1,27 +1,9 @@
 module Crimson::ENV
-  CRIMSON_LIBRARY = {% if flag?(:win32) %}
-                      Path[::ENV["APPDATA"], "crimson"]
-                    {% else %}
-                      begin
-                        if data = ::ENV["XDG_DATA_HOME"]?
-                          Path[data, "crimson"]
-                        else
-                          Path.home / ".local" / "share" / "crimson"
-                        end
-                      end
-                    {% end %}
-
-  CRYSTAL_CACHE = {% if flag?(:win32) %}
-                    Path[::ENV["LOCALAPPDATA"], "crystal"]
-                  {% else %}
-                    Path.home / ".cache" / "crystal"
-                  {% end %}
-
-  CRYSTAL_LIBRARY = {% if flag?(:win32) %}
-                      Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal"]
-                    {% else %}
-                      Path["usr", "lib", "crystal"]
-                    {% end %}
+  LIBRARY = {% if flag?(:win32) %}
+              Path[::ENV["APPDATA"], "crimson"]
+            {% else %}
+              Path[::ENV["XDG_DATA_HOME"]? || Path.home / ".local" / "share" / "crimson"]
+            {% end %}
 
   HOST_TARGET = {% if flag?(:win32) %}
                   "windows-x86_64-msvc-unsupported"
@@ -32,7 +14,7 @@ module Crimson::ENV
                 {% end %}
 
   def self.has_version?(version : String) : Bool
-    Dir.exists? CRIMSON_LIBRARY / "crystal" / version
+    Dir.exists? LIBRARY / "crystal" / version
   end
 
   @@versions = [] of String
