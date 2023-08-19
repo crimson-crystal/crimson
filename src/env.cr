@@ -19,14 +19,21 @@ module Crimson::ENV
 
   @@versions = [] of String
 
-  # TODO: cache the response in file system
   def self.get_available_versions(force : Bool) : Array(String)
     return @@versions unless @@versions.empty?
+    unless force
+      if File.exists? path = LIBRARY / "versions.txt"
+        return @@versions = File.read_lines path
+      end
+    end
 
     res = Crest.get "https://crystal-lang.org/api/versions.json"
     data = JSON.parse res.body
 
     @@versions = data["versions"].as_a.map &.["name"].as_s
+    File.write LIBRARY / "versions.txt", @@versions.join '\n'
+
+    @@versions
   end
 
   def self.get_installed_versions : Array(String)
