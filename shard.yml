@@ -1,5 +1,5 @@
 name: crimson
-description: A Crystal Toolchain Manager
+description: A Crystal Version Manager
 authors:
   - Devonte W <https://github.com/devnote-dev>
 
@@ -27,3 +27,4 @@ development_dependencies:
 targets:
   crimson:
     main: src/main.cr
+    args: --stats

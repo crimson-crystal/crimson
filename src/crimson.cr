@@ -23,7 +23,7 @@ module Crimson
   class App < Commands::Base
     def setup : Nil
       @name = "app"
-      @header = %(#{"Crimson".colorize.red} • #{"A Crystal Toolchain Manager".colorize.light_red})
+      @header = %(#{"Crimson".colorize.red} • #{"A Crystal Version Manager".colorize.light_red})
 
       add_command Commands::Setup.new
       add_command Commands::Env.new
