@@ -1,20 +1,34 @@
 module Crimson
   class Config
-    include YAML::Serializable
-
     property current : String?
-    property installed : Array(String) = [] of String
-    property aliases : Hash(String, String) = {} of String => String
+    property location : String?
+    property aliases : Hash(String, String)
 
     def self.load : self
-      from_yaml File.read ENV::LIBRARY / "config.yml"
+      File.open ENV::LIBRARY / "crimson.ini" do |file|
+        data = INI.parse file
+
+        current = data["current"]?.try &.["version"]
+        current = nil if current.try &.empty?
+        location = data["current"]?.try &.["location"]
+        location = nil if location.try &.empty?
+        aliases = data["aliases"]? || {} of String => String
+
+        new current, location, aliases
+      end
     end
 
-    def initialize(@current)
+    def initialize(@current, @location, aliases = nil)
+      @aliases = aliases || {} of String => String
     end
 
     def save : Nil
-      File.write ENV::LIBRARY / "config.yml", to_yaml
+      File.open ENV::LIBRARY / "crimson.ini", mode: "w" do |file|
+        INI.build file, {
+          current: {version: @current, location: @location},
+          aliases: @aliases,
+        }
+      end
     end
   end
 end

@@ -3,7 +3,7 @@ require "colorize"
 require "compress/gzip"
 require "crest"
 require "crystar"
-require "yaml"
+require "ini"
 
 require "./commands/*"
 require "./config"
