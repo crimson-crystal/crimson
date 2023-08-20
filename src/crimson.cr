@@ -28,6 +28,7 @@ module Crimson
       add_command Commands::Setup.new
       add_command Commands::Env.new
       add_command Commands::Install.new
+      add_command Commands::List.new
       add_command Commands::Version.new
     end
 
