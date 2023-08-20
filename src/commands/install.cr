@@ -65,18 +65,18 @@ module Crimson::Commands
       info "Unpacking archive to destination..."
       stdout << "\e[?25l0 files unpacked\r"
       count = 0i32
-      size = 0i64
+      size = 0i32
 
-      Compress::Gzip::Reader.open(archive.path) do |gzip|
-        Crystar::Reader.open(gzip) do |tar|
+      Compress::Gzip::Reader.open archive.path do |gzip|
+        Crystar::Reader.open gzip do |tar|
           tar.each_entry do |entry|
-            dest = path / Path[entry.name].parts[1..].join(File::SEPARATOR)
+            dest = path / Path[entry.name].parts[1..].join File::SEPARATOR
             if entry.flag == 53 # check directories
               Dir.mkdir_p dest
               next
             end
 
-            File.open(dest, mode: "w") do |file|
+            File.open dest, mode: "w" do |file|
               IO.copy entry.io, file
               count += 1
               size += entry.size
