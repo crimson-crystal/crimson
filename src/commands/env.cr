@@ -10,25 +10,16 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load rescue Config.new nil, nil
 
-      stdout << "Library:   " << ENV::LIBRARY << '\n'
-      stdout << "Target:    " << ENV::HOST_TARGET << '\n'
+      stdout << "Library:  " << ENV::LIBRARY << '\n'
+      stdout << "Target:   " << ENV::HOST_TARGET << '\n'
 
-      stdout << "Current:   "
+      stdout << "Current:  "
       if current = config.current
         stdout << current << '\n'
       elsif Process.find_executable "crystal"
         stdout << "(system install)\n"
       else
         stdout << "none\n"
-      end
-
-      stdout << "Installed: "
-      installed = ENV.get_installed_versions
-      if installed.empty?
-        stdout << "none\n"
-      else
-        installed.each { |version| stdout << "\n• " << version }
-        stdout << '\n'
       end
     end
   end
