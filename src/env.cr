@@ -6,7 +6,7 @@ module Crimson::ENV
             {% end %}
 
   CRYSTAL_PATH = LIBRARY / "crystal"
-  BIN_PATH = LIBRARY / "bin"
+  BIN_PATH     = LIBRARY / "bin"
 
   HOST_TARGET = {% if flag?(:win32) %}
                   "windows-x86_64-msvc-unsupported"
