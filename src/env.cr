@@ -5,6 +5,9 @@ module Crimson::ENV
               Path[::ENV["XDG_DATA_HOME"]? || Path.home / ".local" / "share" / "crimson"]
             {% end %}
 
+  CRYSTAL_PATH = LIBRARY / "crystal"
+  BIN_PATH = LIBRARY / "bin"
+
   HOST_TARGET = {% if flag?(:win32) %}
                   "windows-x86_64-msvc-unsupported"
                 {% elsif flag?(:darwin) %}
