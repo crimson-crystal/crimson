@@ -3,6 +3,7 @@ require "colorize"
 require "compress/gzip"
 require "crest"
 require "crystar"
+require "file_utils"
 require "ini"
 
 require "./commands/*"
@@ -29,6 +30,7 @@ module Crimson
       add_command Commands::Env.new
       add_command Commands::Install.new
       add_command Commands::List.new
+      add_command Commands::Remove.new
       add_command Commands::Version.new
     end
 
