@@ -8,17 +8,15 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-      verbose { "checking crimson library path" }
       unless Dir.exists? ENV::LIBRARY
-        verbose { "creating crimson library path" }
+        info "creating crimson library path"
         Dir.mkdir_p ENV::LIBRARY
       end
 
       begin
-        verbose { "checking crimson config file" }
         _ = Config.load
       rescue File::NotFoundError
-        verbose { "crimson config not found; creating" }
+        info "crimson config not found; creating"
         Config.new(nil, nil).save
       rescue INI::ParseException
         warn "Config is in an invalid format; overwriting"
@@ -32,53 +30,45 @@ module Crimson::Commands
         end
       end
 
-      verbose { "checking executables path" }
-      unless Dir.exists? bin = ENV::LIBRARY / "bin"
-        verbose { "creating executables path" }
-        Dir.mkdir_p bin
+      unless Dir.exists? ENV::BIN_PATH
+        info "creating executables path"
+        Dir.mkdir_p ENV::BIN_PATH
       end
 
-      verbose { "ensuring paths are linked" }
       if File.symlink? "/usr/local/bin/crystal"
-        unless File.real_path("/usr/local/bin/crystal") == (ENV::LIBRARY / "bin" / "crystal").to_s
-          verbose { "linking executable paths" }
-          link_executables
+        realpath = File.realpath "/usr/local/bin/crystal" rescue nil
+        unless realpath.try { |p| p == (ENV::BIN_PATH / "crystal").to_s }
+          info "linking crystal executable path"
+          link_executable "crystal"
         end
       else
-        verbose { "linking executable paths" }
-        link_executables
+        info "linking crystal executable path"
+        link_executable "crystal"
+      end
+
+      if File.symlink? "/usr/local/bin/shards"
+        realpath = File.realpath "/usr/local/bin/shards" rescue nil
+        unless realpath.try { |p| p == (ENV::BIN_PATH / "shards").to_s }
+          info "linking shards executable path"
+          link_executable "shards"
+        end
+      else
+        info "linking shards executable path"
+        link_executable "shards"
       end
     end
 
-    private def link_executables : Nil
-      begin
-        File.symlink ENV::LIBRARY / "bin" / "crystal", "/usr/local/bin/crystal"
-      rescue File::Error
-        info "Root permissions are required to link executable"
-        args = ["ln", "-s", (ENV::LIBRARY / "bin" / "crystal").to_s, "/usr/local/bin/crystal"]
-        info "Requested command:"
-        info "sudo #{args.join ' '}".colorize.bold.to_s
+    private def link_executable(name : String) : Nil
+      args = {"ln", "-s", (ENV::BIN_PATH / name).to_s, "/usr/local/bin/#{name}"}
+      info "Requested command:"
+      info "sudo #{args.join ' '}".colorize.bold.to_s
 
-        status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-        unless status.success?
-          error "Failed to link executable path"
-          error "Please run the command above after installation is complete"
-        end
-      end
+      err = IO::Memory.new
+      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: err
 
-      begin
-        File.symlink ENV::LIBRARY / "bin" / "shards", "/usr/local/bin/shards"
-      rescue File::Error
-        info "Root permissions are required to link executable"
-        args = ["ln", "-s", (ENV::LIBRARY / "bin" / "shards").to_s, "/usr/local/bin/shards"]
-        info "Requested command:"
-        info "sudo #{args.join ' '}".colorize.bold.to_s
-
-        status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-        unless status.success?
-          error "Failed to link executable path"
-          error "Please run the command above after installation is complete"
-        end
+      unless status.success?
+        error err.to_s
+        error "Please run the command above after setup is complete"
       end
     end
   end
