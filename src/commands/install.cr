@@ -89,8 +89,8 @@ module Crimson::Commands
 
       info "#{count} files unpacked (#{size.humanize_bytes})\e[?25h"
       info "Ensuring file permissions"
-      File.chmod path / bin / "crystal", 0o755
-      File.chmod path / bin / "shards", 0o755
+      File.chmod path / "bin" / "crystal", 0o755
+      File.chmod path / "bin" / "shards", 0o755
 
       unless File.exists?("/usr/local/bin/crystal") && File.info("/usr/local/bin/crystal").type.symlink?
         info "Linking executable paths"
