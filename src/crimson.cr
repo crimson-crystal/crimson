@@ -30,6 +30,7 @@ module Crimson
       add_command Commands::Env.new
       add_command Commands::Install.new
       add_command Commands::List.new
+      add_command Commands::Switch.new
       add_command Commands::Remove.new
       add_command Commands::Version.new
     end
