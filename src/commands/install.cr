@@ -13,6 +13,8 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      config = Config.load
+
       version = arguments.get?("version").try &.as_s
       if version
         unless version =~ /\d\.\d\.\d/
@@ -92,23 +94,34 @@ module Crimson::Commands
       File.chmod path / "bin" / "crystal", 0o755
       File.chmod path / "bin" / "shards", 0o755
 
-      unless File.exists?("/usr/local/bin/crystal") && File.info("/usr/local/bin/crystal").type.symlink?
-        info "Linking executable paths"
-        begin
-          File.symlink path / "bin" / "crystal", "/usr/local/bin/crystal"
-        rescue File::Error
-          info "Root permissions are required to link executable"
-          args = ["ln", "-s", (path / "bin" / "crystal").to_s, "/usr/local/bin/crystal"]
-          info "Requested command:"
-          info "sudo #{args.join ' '}".colorize.bold.to_s
-
-          status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-          unless status.success?
-            error "Failed to link executable path"
-            error "Please run the command above after installation is complete"
-          end
+      if value = options.get?("alias").try &.as_s
+        info "Setting version alias"
+        if current = config.aliases[value]?
+          warn "This will remove the alias from version #{current}"
         end
+
+        config.aliases[value] = version
       end
+
+      if options.has? "switch"
+        info "Switching Crystal versions..."
+        if File.symlink? ENV::BIN_PATH / "crystal"
+          File.delete ENV::BIN_PATH / "crystal"
+        end
+        File.symlink path / "bin" / "crystal", ENV::BIN_PATH / "crystal"
+
+        if File.symlink? ENV::BIN_PATH / "shards"
+          File.delete ENV::BIN_PATH / "shards"
+        end
+        File.symlink path / "bin" / "shards", ENV::BIN_PATH / "shards"
+        config.current = version
+
+        info "Switched current Crystal to #{version}"
+      end
+
+      # Basically running the ensure block
+      info "Cleaning up processes..."
+      config.save
     ensure
       if arc = archive
         arc.close unless arc.closed?
