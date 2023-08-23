@@ -6,6 +6,7 @@ require "crystar"
 require "file_utils"
 require "ini"
 
+require "./commands/base"
 require "./commands/*"
 require "./config"
 require "./env"
@@ -31,6 +32,7 @@ module Crimson
       add_command Commands::Install.new
       add_command Commands::List.new
       add_command Commands::Current.new
+      add_command Commands::Alias.new
       add_command Commands::Switch.new
       add_command Commands::Remove.new
       add_command Commands::Version.new
