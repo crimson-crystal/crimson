@@ -38,29 +38,29 @@ module Crimson::Commands
       if File.symlink? "/usr/local/bin/crystal"
         realpath = File.realpath "/usr/local/bin/crystal" rescue nil
         unless realpath.try { |p| p == (ENV::BIN_PATH / "crystal").to_s }
-          info "linking crystal executable path"
+          info "Linking crystal executable path"
           link_executable "crystal"
         end
       else
-        info "linking crystal executable path"
+        info "Linking crystal executable path"
         link_executable "crystal"
       end
 
       if File.symlink? "/usr/local/bin/shards"
         realpath = File.realpath "/usr/local/bin/shards" rescue nil
         unless realpath.try { |p| p == (ENV::BIN_PATH / "shards").to_s }
-          info "linking shards executable path"
+          info "Linking shards executable path"
           link_executable "shards"
         end
       else
-        info "linking shards executable path"
+        info "Linking shards executable path"
         link_executable "shards"
       end
     end
 
     private def link_executable(name : String) : Nil
       args = {"ln", "-s", (ENV::BIN_PATH / name).to_s, "/usr/local/bin/#{name}"}
-      info "Requested command:"
+      info "Running command:"
       info "sudo #{args.join ' '}".colorize.bold.to_s
 
       err = IO::Memory.new
