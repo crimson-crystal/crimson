@@ -4,7 +4,6 @@ module Crimson::Commands
       @name = "alias"
       @summary = "version alias management"
 
-      add_usage "alias [name]"
       add_usage "alias <name> <version>"
       add_usage "alias [-d|--delete] <name>"
 
@@ -17,6 +16,8 @@ module Crimson::Commands
       config = Config.load
 
       if arguments.empty?
+        on_unknown_options %w[delete] if options.has? "delete"
+
         config.aliases.each do |name, version|
           stdout << name << " -> " << version << '\n'
         end
@@ -29,7 +30,10 @@ module Crimson::Commands
       if options.has? "delete"
         on_unknown_arguments %w[version] if version
 
-        unless config.aliases.delete name
+        if config.aliases.delete name
+          config.save
+          return
+        else
           error "No alias named '#{name}'"
           system_exit
         end
