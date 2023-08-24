@@ -17,7 +17,14 @@ module Crimson::Commands
       if current = config.current
         stdout << current << '\n'
       elsif Process.find_executable "crystal"
-        stdout << "(system install)\n"
+        stdout << "system install\n"
+      else
+        stdout << "none\n"
+      end
+
+      stdout << "Default:  "
+      if default = config.default
+        stdout << default << '\n'
       else
         stdout << "none\n"
       end
