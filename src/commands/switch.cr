@@ -4,24 +4,25 @@ module Crimson::Commands
       @name = "switch"
       @summary = "switch the current Crystal version"
 
+      add_usage "switch"
       add_usage "switch [-v|--verbose] <version>"
       add_usage "switch [-v|--verbose] <alias>"
 
-      add_argument "target", required: true
+      add_argument "target"
       add_option 'v', "verbose"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
-      target = arguments.get("target").as_s
 
-      unless target =~ /\d\.\d\.\d/
-        if version = config.aliases[target]?
-          target = version
-        else
-          error "Invalid version format (must be major.minor.patch)"
-          system_exit
-        end
+      unless arguments.has? "target"
+        puts config.current if config.current
+        return
+      end
+
+      target = arguments.get("target").as_s
+      if version = config.aliases[target]?
+        target = version
       end
 
       unless ENV.installed? target
