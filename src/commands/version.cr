@@ -4,8 +4,6 @@ module Crimson::Commands
       @name = "version"
       @summary = "get version information"
       @description = "Gets the version information about Crimson."
-
-      add_usage "version"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

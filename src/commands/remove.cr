@@ -9,7 +9,6 @@ module Crimson::Commands
       add_usage "remove <target>"
 
       add_argument "target", description: "the version or alias version to remove", required: true
-      add_option 'v', "verbose"
     end
 
     # NOTE: config is saved preemtively because `at_exit` doesn't work

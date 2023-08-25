@@ -7,8 +7,6 @@ module Crimson::Commands
         Shows the current Crimson environment (also available via the 'default' and
         'switch' commands).
         DESC
-
-      add_usage "env"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

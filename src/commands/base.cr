@@ -5,8 +5,9 @@ module Crimson::Commands
 
       @verbose = false
       @inherit_options = true
-      add_option "no-color", description: "disable ansi color formatting"
       add_option 'h', "help", description: "get help information"
+      add_option "no-color", description: "disable ansi color formatting"
+      add_option 'v', "verbose", description: "display verbose logging"
     end
 
     def help_template : String

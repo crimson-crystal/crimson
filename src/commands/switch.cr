@@ -14,7 +14,6 @@ module Crimson::Commands
       add_usage "switch [-v|--verbose] <target>"
 
       add_argument "target", description: "the version or version alias to switch to"
-      add_option 'v', "verbose"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

@@ -16,7 +16,6 @@ module Crimson::Commands
       add_option 'd', "default", description: "set the version as default"
       add_option 'f', "fetch", description: "fetch versions from the api"
       add_option 's', "switch", description: "switch the available version on the system"
-      add_option 'v', "verbose"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

@@ -19,8 +19,6 @@ module Crimson::Commands
                         require root permissions which you will be prompted for during setup.
                         DESC
                      {% end %}
-
-      add_option 'v', "verbose"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
