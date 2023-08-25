@@ -3,13 +3,19 @@ module Crimson::Commands
     def setup : Nil
       @name = "install"
       @summary = "install a version of crystal"
+      @description = <<-DESC
+        Installs a version of Crystal. If no version is specified, the latest available
+        version is selected. Available versions are cached on your system but can be
+        fetched from the Crystal API by specifying the '--fetch' option.
+        DESC
 
-      add_usage "install [-a|--alias <name>] [-f|--fetch] [-s|--switch] [-v|--verbose] [version]"
-      add_argument "version"
-      add_option 'a', "alias", type: :single
-      add_option 'd', "default"
-      add_option 'f', "fetch"
-      add_option 's', "switch"
+      add_usage "install [-a|--alias <name>] [-f|--fetch] [-s|--switch] [version]"
+
+      add_argument "version", description: "the version to install"
+      add_option 'a', "alias", description: "set the alias of the version", type: :single
+      add_option 'd', "default", description: "set the version as default"
+      add_option 'f', "fetch", description: "fetch versions from the api"
+      add_option 's', "switch", description: "switch the available version on the system"
       add_option 'v', "verbose"
     end
 

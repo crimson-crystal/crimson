@@ -3,14 +3,21 @@ module Crimson::Commands
     def setup : Nil
       @name = "alias"
       @summary = "version alias management"
+      @description = <<-DESC
+        Manages the version aliases for installed Crystal versions. By default this
+        command will list all configured aliases. Specifying the 'name' and 'version'
+        will set a new alias by the name for that version. Duplicate aliases will be
+        overwritten. Specifying the '--delete' option with an alias name will remove
+        that alias.
+        DESC
 
       add_usage "alias"
       add_usage "alias <name> <version>"
       add_usage "alias [-d|--delete] <name>"
 
-      add_argument "name"
-      add_argument "version"
-      add_option 'd', "delete"
+      add_argument "name", description: "the alias to set"
+      add_argument "version", description: "the version to alias"
+      add_option 'd', "delete", description: "delete the specified alias"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

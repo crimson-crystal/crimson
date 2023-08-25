@@ -3,6 +3,10 @@ module Crimson::Commands
     def setup : Nil
       @name = "env"
       @summary = "show the crimson environment"
+      @description = <<-DESC
+        Shows the current Crimson environment (also available via the 'default' and
+        'switch' commands).
+        DESC
 
       add_usage "env"
     end

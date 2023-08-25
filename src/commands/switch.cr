@@ -3,12 +3,17 @@ module Crimson::Commands
     def setup : Nil
       @name = "switch"
       @summary = "switch the current Crystal version"
+      @description = <<-DESC
+        Manages the available Crystal version on the system. By default this command
+        will print the current set Crystal version. Specifying a version or version
+        alias will set that as the available version on the system (meaning it will
+        switch the Crystal and Shards executables).
+        DESC
 
       add_usage "switch"
-      add_usage "switch [-v|--verbose] <version>"
-      add_usage "switch [-v|--verbose] <alias>"
+      add_usage "switch [-v|--verbose] <target>"
 
-      add_argument "target"
+      add_argument "target", description: "the version or version alias to switch to"
       add_option 'v', "verbose"
     end
 

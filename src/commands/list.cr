@@ -12,7 +12,9 @@ module Crimson::Commands
     def setup : Nil
       @name = "list"
       @summary = "list installed Crystal versions"
+      @description = "Lists the installed Crystal versions."
 
+      add_alias "ls"
       add_usage "list [-a|--alias] [-p|--path]"
 
       add_option 'a', "alias", description: "include the version alias"

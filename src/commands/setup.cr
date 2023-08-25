@@ -3,6 +3,22 @@ module Crimson::Commands
     def setup : Nil
       @name = "setup"
       @summary = "setup the crimson environment"
+      @description = {% if flag?(:win32) %}
+                       <<-DESC
+                        Runs the setup process for the Crimson environment and configurations. In order
+                        to manage Crystal versions, Crimson will update the PATH environment variable
+                        for the current user's environment with the path to Crimson's bin/executable
+                        path. This may require elevated permissions which you will be prompted for
+                        during setup.
+                        DESC
+                     {% else %}
+                       <<-DESC
+                        Runs the setup process for the Crimson environment and configurations. In order
+                        to manage Crystal versions, Crimson will attempt to link its bin/executable path
+                        to the current user's local bin path (usually at '/usr/local/bin'). This may
+                        require root permissions which you will be prompted for during setup.
+                        DESC
+                     {% end %}
 
       add_option 'v', "verbose"
     end

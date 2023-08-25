@@ -3,8 +3,12 @@ module Crimson::Commands
     def setup : Nil
       @name = "remove"
       @summary = "remove a version of Crystal"
+      @description = "Removes an installed version of Crystal."
 
-      add_argument "target", required: true
+      add_alias "rm"
+      add_usage "remove <target>"
+
+      add_argument "target", description: "the version or alias version to remove", required: true
       add_option 'v', "verbose"
     end
 
