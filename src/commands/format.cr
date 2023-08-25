@@ -36,8 +36,12 @@ module Crimson::Commands
 
       unless command.arguments.empty?
         io << "Arguments".colorize.red << '\n'
+        max_size = 4 + command.arguments.keys.max_of &.size
+
         command.arguments.each do |name, argument|
-          io << "• " << name << '\t' << argument.description
+          io << "• " << name
+          io << " " * (max_size - name.size)
+          io << argument.description
           io << " (required)" if argument.required?
           io << '\n'
         end
