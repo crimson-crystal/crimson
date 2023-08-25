@@ -4,6 +4,7 @@ module Crimson::Commands
       @name = "alias"
       @summary = "version alias management"
 
+      add_usage "alias"
       add_usage "alias <name> <version>"
       add_usage "alias [-d|--delete] <name>"
 

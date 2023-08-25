@@ -30,7 +30,7 @@ module Crimson::Commands
         system_exit
       end
 
-      root = ENV::LIBRARY / "crystal" / target
+      root = ENV::CRYSTAL_PATH / target
 
       if File.symlink? ENV::BIN_PATH / "crystal"
         File.delete ENV::BIN_PATH / "crystal"

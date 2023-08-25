@@ -17,7 +17,7 @@ module Crimson::ENV
                 {% end %}
 
   def self.installed?(version : String) : Bool
-    Dir.exists? LIBRARY / "crystal" / version
+    Dir.exists? CRYSTAL_PATH / version
   end
 
   @@versions = [] of String
@@ -40,8 +40,8 @@ module Crimson::ENV
   end
 
   def self.get_installed_versions : Array(String)
-    Dir.children(root = LIBRARY / "crystal").select do |child|
-      File.directory? root / child
+    Dir.children(CRYSTAL_PATH).select do |child|
+      File.directory? CRYSTAL_PATH / child
     end
   end
 end

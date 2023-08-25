@@ -9,14 +9,14 @@ module Crimson::Commands
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       unless Dir.exists? ENV::LIBRARY
-        info "creating crimson library path"
+        puts "creating crimson library path"
         Dir.mkdir_p ENV::LIBRARY
       end
 
       begin
         _ = Config.load
       rescue File::NotFoundError
-        info "crimson config not found; creating"
+        puts "crimson config not found; creating"
         Config.new(nil, nil).save
       rescue INI::ParseException
         warn "Config is in an invalid format; overwriting"
@@ -31,45 +31,44 @@ module Crimson::Commands
       end
 
       unless Dir.exists? ENV::BIN_PATH
-        info "creating executables path"
+        puts "creating executables path"
         Dir.mkdir_p ENV::BIN_PATH
       end
 
       if File.symlink? "/usr/local/bin/crystal"
         realpath = File.realpath "/usr/local/bin/crystal" rescue nil
         unless realpath.try { |p| p == (ENV::BIN_PATH / "crystal").to_s }
-          info "Linking crystal executable path"
+          puts "Linking crystal executable path"
           link_executable "crystal"
         end
       else
-        info "Linking crystal executable path"
+        puts "Linking crystal executable path"
         link_executable "crystal"
       end
 
       if File.symlink? "/usr/local/bin/shards"
         realpath = File.realpath "/usr/local/bin/shards" rescue nil
         unless realpath.try { |p| p == (ENV::BIN_PATH / "shards").to_s }
-          info "Linking shards executable path"
+          puts "Linking shards executable path"
           link_executable "shards"
         end
       else
-        info "Linking shards executable path"
+        puts "Linking shards executable path"
         link_executable "shards"
       end
     end
 
     private def link_executable(name : String) : Nil
       args = {"ln", "-s", (ENV::BIN_PATH / name).to_s, "/usr/local/bin/#{name}"}
-      info "Running command:"
-      info "sudo #{args.join ' '}".colorize.bold.to_s
+      puts "Running command:"
+      puts "sudo #{args.join ' '}".colorize.bold.to_s
 
       err = IO::Memory.new
       status = Process.run "sudo", args, input: :inherit, output: :inherit, error: err
 
-      unless status.success?
-        error err.to_s
-        error "Please run the command above after setup is complete"
-      end
+      return unless status.success?
+      error err.to_s
+      error "Please run the command above after setup is complete"
     end
   end
 end

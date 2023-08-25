@@ -82,17 +82,9 @@ module Crimson::Commands
       raise SystemExit.new
     end
 
-    protected def verbose(& : -> String) : Nil
+    protected def verbose(& : ->) : Nil
       return unless @verbose
       stdout << yield << '\n'
-    end
-
-    protected def info(data : String) : Nil
-      stdout.puts data
-    end
-
-    protected def notice(data : String) : Nil
-      stdout << "notice".colorize.cyan << ": " << data << '\n'
     end
 
     protected def warn(data : String) : Nil

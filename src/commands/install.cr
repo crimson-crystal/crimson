@@ -30,7 +30,7 @@ module Crimson::Commands
       if ENV.installed? version
         error "Crystal version #{version} is already installed"
         command = "crimson switch #{version}".colorize.bold
-        notice "To use it run '#{command}'"
+        error "To use it run '#{command}'"
         system_exit
       end
 
@@ -40,7 +40,7 @@ module Crimson::Commands
       end
 
       path = ENV::LIBRARY / "crystal" / version
-      info "Installing Crystal version: #{version}"
+      puts "Installing Crystal version: #{version}"
       verbose { "ensuring directory: #{path}" }
 
       begin
@@ -57,7 +57,7 @@ module Crimson::Commands
       verbose { "location: #{archive.path}" }
 
       source = "https://github.com/crystal-lang/crystal/releases/download/#{version}/crystal-#{version}-#{ENV::HOST_TARGET}.tar.gz"
-      info "Downloading sources..."
+      puts "Downloading sources..."
       verbose { source }
 
       Crest.get source do |res|
@@ -65,10 +65,9 @@ module Crimson::Commands
         archive.close
       end
 
-      info "Unpacking archive to destination..."
+      puts "Unpacking archive to destination..."
       stdout << "\e[?25l0 files unpacked\r"
-      count = 0i32
-      size = 0i32
+      count = size = 0i32
 
       Compress::Gzip::Reader.open archive.path do |gzip|
         Crystar::Reader.open gzip do |tar|
@@ -85,18 +84,18 @@ module Crimson::Commands
               size += entry.size
             end
 
-            stdout << "#{count} files unpacked (#{size.humanize_bytes})\r"
+            stdout << count << " files unpacked (" << size.humanize_bytes << ")\r"
           end
         end
       end
 
-      info "#{count} files unpacked (#{size.humanize_bytes})\e[?25h"
-      info "Ensuring file permissions"
+      puts "#{count} files unpacked (#{size.humanize_bytes})\e[?25h"
+      puts "Ensuring file permissions"
       File.chmod path / "bin" / "crystal", 0o755
       File.chmod path / "bin" / "shards", 0o755
 
       if value = options.get?("alias").try &.as_s
-        info "Setting version alias"
+        puts "Setting version alias"
         if current = config.aliases[value]?
           warn "This will remove the alias from version #{current}"
         end
@@ -105,12 +104,12 @@ module Crimson::Commands
       end
 
       if options.has? "default"
-        info "Updating to default version"
+        puts "Updating to default version"
         config.default = version
       end
 
       if options.has? "switch"
-        info "Switching Crystal versions..."
+        puts "Switching Crystal versions..."
         if File.symlink? ENV::BIN_PATH / "crystal"
           File.delete ENV::BIN_PATH / "crystal"
         end
@@ -122,13 +121,13 @@ module Crimson::Commands
         File.symlink path / "bin" / "shards", ENV::BIN_PATH / "shards"
         config.current = version
 
-        info "Switched current Crystal to #{version}"
+        puts "Switched current Crystal to #{version}"
       end
 
-      # Basically running the ensure block
-      info "Cleaning up processes..."
+      puts "Cleaning up processes..."
       config.save
     ensure
+      # TODO: find a way to get this into `at_exit`
       if arc = archive
         arc.close unless arc.closed?
         arc.delete

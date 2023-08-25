@@ -31,7 +31,7 @@ module Crimson::Commands
         system_exit
       end
 
-      FileUtils.rm_rf ENV::LIBRARY / "crystal" / target
+      FileUtils.rm_rf ENV::CRYSTAL_PATH / target
     end
   end
 end

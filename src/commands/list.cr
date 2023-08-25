@@ -42,9 +42,8 @@ module Crimson::Commands
       end
 
       if path
-        root = ENV::LIBRARY / "crystal"
         results.each do |result|
-          result.path = (root / result.version).to_s
+          result.path = (ENV::CRYSTAL_PATH / result.version).to_s
         end
       end
 
