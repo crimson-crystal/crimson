@@ -7,6 +7,7 @@ module Crimson::Commands
       add_usage "install [-a|--alias <name>] [-f|--fetch] [-s|--switch] [-v|--verbose] [version]"
       add_argument "version"
       add_option 'a', "alias", type: :single
+      add_option 'd', "default"
       add_option 'f', "fetch"
       add_option 's', "switch"
       add_option 'v', "verbose"
@@ -101,6 +102,11 @@ module Crimson::Commands
         end
 
         config.aliases[value] = version
+      end
+
+      if options.has? "default"
+        info "Updating to default version"
+        config.default = version
       end
 
       if options.has? "switch"
