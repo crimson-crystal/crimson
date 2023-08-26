@@ -72,35 +72,21 @@ module Crimson::Commands
         archive.close
       end
 
+      # Maybe some time in the future...
+      # at_exit do
+      #   archive.close unless archive.closed?
+      #   archive.delete
+      #   stderr << "\e[?25h"
+      # end
+
       puts "Unpacking archive to destination..."
-      stderr << "\e[?25l0 files unpacked\r"
-      count = size = 0i32
+      Internal.decompress path, archive.path
 
-      Compress::Gzip::Reader.open archive.path do |gzip|
-        Crystar::Reader.open gzip do |tar|
-          tar.each_entry do |entry|
-            dest = path / Path[entry.name].parts[1..].join File::SEPARATOR
-            if entry.flag == 53 # check directories
-              Dir.mkdir_p dest
-              next
-            end
-
-            File.open dest, mode: "w" do |file|
-              IO.copy entry.io, file
-              count += 1
-              size += entry.size
-            end
-
-            stderr << count << " files unpacked (" << size.humanize_bytes << ")\r"
-          end
-        end
-      end
-
-      stderr << "\e[?25h\e[2K"
-      puts "#{count} files unpacked (#{size.humanize_bytes})"
-      puts "Ensuring file permissions"
-      File.chmod path / "bin" / "crystal", 0o755
-      File.chmod path / "bin" / "shards", 0o755
+      {% unless flag?(:win32) %}
+        puts "Ensuring file permissions"
+        File.chmod path / "bin" / "crystal", 0o755
+        File.chmod path / "bin" / "shards", 0o755
+      {% end %}
 
       if value = options.get?("alias").try &.as_s
         puts "Setting version alias"
@@ -118,15 +104,7 @@ module Crimson::Commands
 
       if options.has? "switch"
         puts "Switching Crystal versions..."
-        if File.symlink? ENV::BIN_PATH / "crystal"
-          File.delete ENV::BIN_PATH / "crystal"
-        end
-        File.symlink path / "bin" / "crystal", ENV::BIN_PATH / "crystal"
-
-        if File.symlink? ENV::BIN_PATH / "shards"
-          File.delete ENV::BIN_PATH / "shards"
-        end
-        File.symlink path / "bin" / "shards", ENV::BIN_PATH / "shards"
+        Internal.switch path
         config.current = version
 
         puts "Switched current Crystal to #{version}"

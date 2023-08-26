@@ -1,8 +1,6 @@
 require "cling"
 require "colorize"
-require "compress/gzip"
 require "crest"
-require "crystar"
 require "file_utils"
 require "ini"
 
@@ -10,6 +8,7 @@ require "./commands/base"
 require "./commands/*"
 require "./config"
 require "./env"
+require "./internal"
 
 module Crimson
   VERSION = "0.1.0"

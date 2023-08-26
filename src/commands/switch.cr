@@ -34,18 +34,7 @@ module Crimson::Commands
         system_exit
       end
 
-      root = ENV::CRYSTAL_PATH / target
-
-      if File.symlink? ENV::BIN_PATH / "crystal"
-        File.delete ENV::BIN_PATH / "crystal"
-      end
-      File.symlink root / "bin" / "crystal", ENV::BIN_PATH / "crystal"
-
-      if File.symlink? ENV::BIN_PATH / "shards"
-        File.delete ENV::BIN_PATH / "shards"
-      end
-      File.symlink root / "bin" / "shards", ENV::BIN_PATH / "shards"
-
+      Internal.switch ENV::CRYSTAL_PATH / target
       config.current = target
       config.save
     end
