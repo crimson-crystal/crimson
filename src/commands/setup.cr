@@ -23,14 +23,14 @@ module Crimson::Commands
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       unless Dir.exists? ENV::LIBRARY
-        puts "creating crimson library path"
+        puts "Creating crimson library path"
         Dir.mkdir_p ENV::LIBRARY
       end
 
       begin
         _ = Config.load
       rescue File::NotFoundError
-        puts "crimson config not found; creating"
+        puts "Crimson config not found; creating"
         Config.new(nil, nil).save
       rescue INI::ParseException
         warn "Config is in an invalid format; overwriting"
@@ -45,13 +45,13 @@ module Crimson::Commands
       end
 
       unless Dir.exists? ENV::BIN_PATH
-        puts "creating executables path"
+        puts "Creating executables path"
         Dir.mkdir_p ENV::BIN_PATH
       end
 
       if File.symlink? "/usr/local/bin/crystal"
-        realpath = File.realpath "/usr/local/bin/crystal" rescue nil
-        unless realpath.try { |p| p == (ENV::BIN_PATH / "crystal").to_s }
+        link = File.readlink "/usr/local/bin/crystal" rescue nil
+        unless link == (ENV::BIN_PATH / "crystal").to_s
           puts "Linking crystal executable path"
           puts "This may require root permissions"
           link_executable "crystal"
@@ -63,8 +63,8 @@ module Crimson::Commands
       end
 
       if File.symlink? "/usr/local/bin/shards"
-        realpath = File.realpath "/usr/local/bin/shards" rescue nil
-        unless realpath.try { |p| p == (ENV::BIN_PATH / "shards").to_s }
+        link = File.readlink "/usr/local/bin/shards" rescue nil
+        unless link == (ENV::BIN_PATH / "shards").to_s
           puts "Linking shards executable path"
           puts "This may require root permissions"
           link_executable "shards"
