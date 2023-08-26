@@ -19,6 +19,9 @@ module Crimson::Commands
                         require root permissions which you will be prompted for during setup.
                         DESC
                      {% end %}
+
+      add_option 's', "skip-dependencies", description: "skip installing external dependencies"
+      add_option 'y', "yes", description: "allow all permission prompts"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
@@ -75,14 +78,15 @@ module Crimson::Commands
         link_executable "shards"
       end
 
-      # TODO: security - must be behind a --yes flag
-      puts "Installing external dependencies"
-      puts "This may require root permissions"
-      install_external_dependencies
+      return if options.has? "skip-dependencies"
 
-      puts "Installing additional dependencies"
-      puts "These are not required for Crystal and can be skipped"
-      install_additional_dependencies
+      puts "Checking external dependencies"
+      warn "This may require root permissions"
+      install_external_dependencies !options.has?("yes")
+
+      puts "Checking additional dependencies"
+      warn "This may require root permissions"
+      install_additional_dependencies !options.has?("yes")
     end
 
     private def link_executable(name : String) : Nil
@@ -97,8 +101,15 @@ module Crimson::Commands
       error "Please run the command above after setup is complete"
     end
 
-    private def install_external_dependencies : Nil
+    private def install_external_dependencies(prompt : Bool) : Nil
       args = {"apt-get", "install", "-y", "gcc", "pkg-config", "libpcre3-dev", "libpcre2-dev", "libevent-dev"}
+      if prompt
+        puts "Crystal requires the following dependencies to compile:"
+        puts args[3..].join(' ').colorize.bold
+        return unless should_continue?
+        puts
+      end
+
       puts "Running command:"
       puts "sudo #{args.join ' '}".colorize.bold
       puts
@@ -109,8 +120,16 @@ module Crimson::Commands
       error "Please run the command above after install is complete"
     end
 
-    private def install_additional_dependencies : Nil
+    private def install_additional_dependencies(prompt : Bool) : Nil
       args = {"apt-get", "install", "-y", "libssl-dev", "libz-dev", "libxml2-dev", "libgmp-dev", "libyaml-dev"}
+      if prompt
+        puts "Crystal uses some additional dependencies for compilation"
+        puts "These dependencies are not required but may improve compilation:"
+        puts args[3..].join(' ').colorize.bold
+        return unless should_continue?
+        puts
+      end
+
       puts "Running command:"
       puts "sudo #{args.join ' '}".colorize.bold
       puts
@@ -119,6 +138,20 @@ module Crimson::Commands
       puts
       return if status.success?
       error "Please run the command above after install is complete"
+    end
+
+    private def should_continue? : Bool
+      loop do
+        stdout << "\nDo you want to continue? (y/n) "
+        case gets.try &.chomp
+        when "y", "ye", "yes"
+          return true
+        when "n", "no"
+          return false
+        else
+          error "Invalid prompt answer (must be yes or no)"
+        end
+      end
     end
   end
 end
