@@ -61,7 +61,9 @@ module Crimson::Commands
       archive = File.open(path / "crystal-#{version}.tar.gz", mode: "w")
       verbose { "location: #{archive.path}" }
 
-      source = "https://github.com/crystal-lang/crystal/releases/download/#{version}/crystal-#{version}-#{ENV::HOST_TARGET}.tar.gz"
+      source = "https://github.com/crystal-lang/crystal/releases/download/" \
+               "#{version}/crystal-#{version}-#{ENV::HOST_TARGET}.tar.gz"
+
       puts "Downloading sources..."
       verbose { source }
 
