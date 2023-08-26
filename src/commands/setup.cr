@@ -41,7 +41,7 @@ module Crimson::Commands
       end
 
       if path = Process.find_executable "crystal"
-        unless path == "/usr/local/bin/crystal"
+        unless path == ENV::TARGET_CRYSTAL_BIN
           warn "Crystal appears to be installed without Crimson"
           warn "Please uninstall it before attempting to install with Crimson"
         end
@@ -52,30 +52,26 @@ module Crimson::Commands
         Dir.mkdir_p ENV::BIN_PATH
       end
 
-      if File.symlink? "/usr/local/bin/crystal"
-        link = File.readlink "/usr/local/bin/crystal" rescue nil
+      if File.symlink? ENV::TARGET_CRYSTAL_BIN
+        link = File.readlink ENV::TARGET_CRYSTAL_BIN rescue nil
         unless link == (ENV::BIN_PATH / "crystal").to_s
           puts "Linking crystal executable path"
-          puts "This may require root permissions"
-          link_executable "crystal"
+          link_executable ENV::TARGET_CRYSTAL_BIN
         end
       else
         puts "Linking crystal executable path"
-        puts "This may require root permissions"
-        link_executable "crystal"
+        link_executable ENV::TARGET_CRYSTAL_BIN
       end
 
-      if File.symlink? "/usr/local/bin/shards"
-        link = File.readlink "/usr/local/bin/shards" rescue nil
+      if File.symlink? ENV::TARGET_SHARDS_BIN
+        link = File.readlink ENV::TARGET_SHARDS_BIN rescue nil
         unless link == (ENV::BIN_PATH / "shards").to_s
           puts "Linking shards executable path"
-          puts "This may require root permissions"
-          link_executable "shards"
+          link_executable ENV::TARGET_SHARDS_BIN
         end
       else
         puts "Linking shards executable path"
-        puts "This may require root permissions"
-        link_executable "shards"
+        link_executable ENV::TARGET_SHARDS_BIN
       end
 
       return if options.has? "skip-dependencies"
@@ -89,56 +85,72 @@ module Crimson::Commands
       install_additional_dependencies !options.has?("yes")
     end
 
-    private def link_executable(name : String) : Nil
-      args = {"ln", "-s", (ENV::BIN_PATH / name).to_s, "/usr/local/bin/#{name}"}
-      puts "Running command:"
-      puts "sudo #{args.join ' '}".colorize.bold.to_s
-      puts
-
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-      puts
-      return if status.success?
-      error "Please run the command above after setup is complete"
-    end
-
-    private def install_external_dependencies(prompt : Bool) : Nil
-      args = {"apt-get", "install", "-y", "gcc", "pkg-config", "libpcre3-dev", "libpcre2-dev", "libevent-dev"}
-      if prompt
-        puts "Crystal requires the following dependencies to compile:"
-        puts args[3..].join(' ').colorize.bold
-        return unless should_continue?
-        puts
+    {% if flag?(:win32) %}
+      private def link_executable(path : String) : Nil
+        return if File.exists? path
+        File.symlink (ENV::BIN_PATH / File.basename path).to_s, path
       end
 
-      puts "Running command:"
-      puts "sudo #{args.join ' '}".colorize.bold
-      puts
-
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-      puts
-      return if status.success?
-      error "Please run the command above after install is complete"
-    end
-
-    private def install_additional_dependencies(prompt : Bool) : Nil
-      args = {"apt-get", "install", "-y", "libssl-dev", "libz-dev", "libxml2-dev", "libgmp-dev", "libyaml-dev"}
-      if prompt
-        puts "Crystal uses some additional dependencies for compilation"
-        puts "These dependencies are not required but may improve compilation:"
-        puts args[3..].join(' ').colorize.bold
-        return unless should_continue?
-        puts
+      private def install_external_dependencies(prompt : Bool) : Nil
       end
 
-      puts "Running command:"
-      puts "sudo #{args.join ' '}".colorize.bold
-      puts
+      private def install_additional_dependencies(prompt : Bool) : Nil
+      end
+    {% end %}
 
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-      puts
-      return if status.success?
-      error "Please run the command above after install is complete"
-    end
+    {% if flag?(:unix) %}
+      private def link_executable(path : String) : Nil
+        puts "This may require root permissions"
+        args = {"ln", "-s", (ENV::BIN_PATH / File.basename path).to_s, path}
+        puts "Running command:"
+        puts "sudo #{args.join ' '}".colorize.bold.to_s
+        puts
+
+        status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+        puts
+        return if status.success?
+        error "Please run the command above after setup is complete"
+      end
+
+      private def install_external_dependencies(prompt : Bool) : Nil
+        args = {"apt-get", "install", "-y", "gcc", "pkg-config", "libpcre3-dev", "libpcre2-dev", "libevent-dev"}
+        if prompt
+          puts "Crystal requires the following dependencies to compile:"
+          puts args[3..].join(' ').colorize.bold
+          return unless should_continue?
+          puts
+        end
+
+        puts "Running command:"
+        puts "sudo #{args.join ' '}".colorize.bold
+        puts
+
+        status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+        puts
+        return if status.success?
+        error "Please run the command above after install is complete"
+      end
+
+      private def install_additional_dependencies(prompt : Bool) : Nil
+        args = {"apt-get", "install", "-y", "libssl-dev", "libz-dev", "libxml2-dev", "libgmp-dev", "libyaml-dev"}
+        if prompt
+          puts "Crystal uses some additional dependencies for compilation"
+          puts "These dependencies are not required but may improve compilation:"
+          puts args[3..].join(' ').colorize.bold
+          return unless should_continue?
+          puts
+        end
+
+        puts "Running command:"
+        puts "sudo #{args.join ' '}".colorize.bold
+        puts
+
+        status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+        puts
+        return if status.success?
+        error "Please run the command above after install is complete"
+      end
+    {% end %}
 
     private def should_continue? : Bool
       loop do

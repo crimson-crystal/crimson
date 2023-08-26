@@ -44,7 +44,7 @@ module Crimson::Commands
         system_exit
       end
 
-      path = ENV::LIBRARY / "crystal" / version
+      path = ENV::CRYSTAL_PATH / version
       puts "Installing Crystal version: #{version}"
       verbose { "ensuring directory: #{path}" }
 
@@ -58,11 +58,11 @@ module Crimson::Commands
       end
 
       verbose { "creating destination file" }
-      archive = File.open(path / "crystal-#{version}.tar.gz", mode: "w")
+      archive = File.open path / "crystal-#{version}-#{ENV::TARGET_IDENTIFIER}", mode: "w"
       verbose { "location: #{archive.path}" }
 
       source = "https://github.com/crystal-lang/crystal/releases/download/" \
-               "#{version}/crystal-#{version}-#{ENV::HOST_TARGET}.tar.gz"
+               "#{version}/crystal-#{version}-#{ENV::TARGET_IDENTIFIER}"
 
       puts "Downloading sources..."
       verbose { source }

@@ -12,10 +12,10 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load rescue Config.new nil, nil
 
-      stdout << "Library:  " << ENV::LIBRARY << '\n'
-      stdout << "Target:   " << ENV::HOST_TARGET << '\n'
+      stdout << "Library:    " << ENV::LIBRARY << '\n'
+      stdout << "Identifier: " << ENV::TARGET_IDENTIFIER << '\n'
 
-      stdout << "Current:  "
+      stdout << "Current:    "
       if current = config.current
         stdout << current << '\n'
       elsif Process.find_executable "crystal"
@@ -24,7 +24,7 @@ module Crimson::Commands
         stdout << "none\n"
       end
 
-      stdout << "Default:  "
+      stdout << "Default:    "
       if default = config.default
         stdout << default << '\n'
       else

@@ -8,13 +8,25 @@ module Crimson::ENV
   CRYSTAL_PATH = LIBRARY / "crystal"
   BIN_PATH     = LIBRARY / "bin"
 
-  HOST_TARGET = {% if flag?(:win32) %}
-                  "windows-x86_64-msvc-unsupported"
-                {% elsif flag?(:darwin) %}
-                  "1-darwin-universal"
-                {% else %}
-                  "1-linux-x86_64"
-                {% end %}
+  TARGET_IDENTIFIER = {% if flag?(:win32) %}
+                        "windows-x86_64-msvc-unsupported.zip"
+                      {% elsif flag?(:darwin) %}
+                        "1-darwin-universal.pkg"
+                      {% else %}
+                        "1-linux-x86_64.tar.gz"
+                      {% end %}
+
+  TARGET_CRYSTAL_BIN = {% if flag?(:win32) %}
+                         File.join ::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.exe"
+                       {% else %}
+                         "/usr/local/bin/crystal"
+                       {% end %}
+
+  TARGET_SHARDS_BIN = {% if flag?(:win32) %}
+                        File.join ::ENV["LOCALAPPDATA"], "Programs", "Crystal", "shards.exe"
+                      {% else %}
+                        "/usr/local/bin/shards"
+                      {% end %}
 
   def self.installed?(version : String) : Bool
     Dir.exists? CRYSTAL_PATH / version
