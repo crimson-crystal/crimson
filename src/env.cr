@@ -8,6 +8,9 @@ module Crimson::ENV
   CRYSTAL_PATH = LIBRARY / "crystal"
   BIN_PATH     = LIBRARY / "bin"
 
+  BIN_PATH_CRYSTAL = BIN_PATH / {% if flag?(:win32) %}"crystal.exe"{% else %}"crystal"{% end %}
+  BIN_PATH_SHARDS  = BIN_PATH / {% if flag?(:win32) %}"shards.exe"{% else %}"shards"{% end %}
+
   TARGET_IDENTIFIER = {% if flag?(:win32) %}
                         "windows-x86_64-msvc-unsupported.zip"
                       {% elsif flag?(:darwin) %}

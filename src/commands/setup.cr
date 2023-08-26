@@ -52,25 +52,37 @@ module Crimson::Commands
         Dir.mkdir_p ENV::BIN_PATH
       end
 
-      if File.symlink? ENV::TARGET_CRYSTAL_BIN
-        link = File.readlink ENV::TARGET_CRYSTAL_BIN rescue nil
-        unless link == (ENV::BIN_PATH / "crystal").to_s
-          puts "Linking crystal executable path"
-          Internal.link_crystal_executable
+      if File.exists? ENV::TARGET_CRYSTAL_BIN
+        if File.symlink? ENV::TARGET_CRYSTAL_BIN
+          link = File.readlink ENV::TARGET_CRYSTAL_BIN
+          unless link == ENV::BIN_PATH_CRYSTAL.to_s
+            puts "Linking Crystal executable path"
+            Internal.link_crystal_executable
+          end
+        else
+          warn "File exists in Crystal executable location:"
+          warn ENV::TARGET_CRYSTAL_BIN.to_s
+          warn "Please rename or remove it"
         end
       else
-        puts "Linking crystal executable path"
+        puts "Linking Crystal executable path"
         Internal.link_crystal_executable
       end
 
-      if File.symlink? ENV::TARGET_SHARDS_BIN
-        link = File.readlink ENV::TARGET_SHARDS_BIN rescue nil
-        unless link == (ENV::BIN_PATH / "shards").to_s
-          puts "Linking shards executable path"
-          Internal.link_shards_executable
+      if File.exists? ENV::TARGET_SHARDS_BIN
+        if File.symlink? ENV::TARGET_SHARDS_BIN
+          link = File.readlink ENV::TARGET_SHARDS_BIN
+          unless link == ENV::BIN_PATH_SHARDS.to_s
+            puts "Linking Shards executable path"
+            Internal.link_shards_executable
+          end
+        else
+          warn "File exists in Shards executable location:"
+          warn ENV::TARGET_SHARDS_BIN.to_s
+          warn "Please rename or remove it"
         end
       else
-        puts "Linking shards executable path"
+        puts "Linking Shards executable path"
         Internal.link_shards_executable
       end
 
