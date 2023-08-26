@@ -53,10 +53,12 @@ module Crimson::Commands
         realpath = File.realpath "/usr/local/bin/crystal" rescue nil
         unless realpath.try { |p| p == (ENV::BIN_PATH / "crystal").to_s }
           puts "Linking crystal executable path"
+          puts "This may require root permissions"
           link_executable "crystal"
         end
       else
         puts "Linking crystal executable path"
+        puts "This may require root permissions"
         link_executable "crystal"
       end
 
@@ -64,25 +66,59 @@ module Crimson::Commands
         realpath = File.realpath "/usr/local/bin/shards" rescue nil
         unless realpath.try { |p| p == (ENV::BIN_PATH / "shards").to_s }
           puts "Linking shards executable path"
+          puts "This may require root permissions"
           link_executable "shards"
         end
       else
         puts "Linking shards executable path"
+        puts "This may require root permissions"
         link_executable "shards"
       end
+
+      # TODO: security - must be behind a --yes flag
+      puts "Installing external dependencies"
+      puts "This may require root permissions"
+      install_external_dependencies
+
+      puts "Installing additional dependencies"
+      puts "These are not required for Crystal and can be skipped"
+      install_additional_dependencies
     end
 
     private def link_executable(name : String) : Nil
       args = {"ln", "-s", (ENV::BIN_PATH / name).to_s, "/usr/local/bin/#{name}"}
       puts "Running command:"
       puts "sudo #{args.join ' '}".colorize.bold.to_s
+      puts
 
-      err = IO::Memory.new
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: err
-
-      return unless status.success?
-      error err.to_s
+      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+      puts
+      return if status.success?
       error "Please run the command above after setup is complete"
+    end
+
+    private def install_external_dependencies : Nil
+      args = {"apt-get", "install", "-y", "gcc", "pkg-config", "libpcre3-dev", "libpcre2-dev", "libevent-dev"}
+      puts "Running command:"
+      puts "sudo #{args.join ' '}".colorize.bold
+      puts
+
+      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+      puts
+      return if status.success?
+      error "Please run the command above after install is complete"
+    end
+
+    private def install_additional_dependencies : Nil
+      args = {"apt-get", "install", "-y", "libssl-dev", "libz-dev", "libxml2-dev", "libgmp-dev", "libyaml-dev"}
+      puts "Running command:"
+      puts "sudo #{args.join ' '}".colorize.bold
+      puts
+
+      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+      puts
+      return if status.success?
+      error "Please run the command above after install is complete"
     end
   end
 end

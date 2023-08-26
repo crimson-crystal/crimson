@@ -130,15 +130,6 @@ module Crimson::Commands
         puts "Switched current Crystal to #{version}"
       end
 
-      # TODO: security - must be behind a --yes flag
-      puts "Installing external dependencies"
-      puts "This may require root permissions"
-      install_external_dependencies
-
-      puts "Installing additional dependencies"
-      puts "These are not required for Crystal and can be skipped"
-      install_additional_dependencies
-
       puts "Cleaning up processes..."
       config.save
     ensure
@@ -147,30 +138,6 @@ module Crimson::Commands
         arc.close unless arc.closed?
         arc.delete
       end
-    end
-
-    private def install_external_dependencies : Nil
-      args = {"apt-get", "install", "-y", "gcc", "pkg-config", "libpcre3-dev", "libpcre2-dev", "libevent-dev"}
-      puts "Running command:"
-      puts "sudo #{args.join ' '}".colorize.bold
-      puts
-
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-      puts
-      return if status.success?
-      error "Please run the command above after install is complete"
-    end
-
-    private def install_additional_dependencies : Nil
-      args = {"apt-get", "install", "-y", "libssl-dev", "libz-dev", "libxml2-dev", "libgmp-dev", "libyaml-dev"}
-      puts "Running command:"
-      puts "sudo #{args.join ' '}".colorize.bold
-      puts
-
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-      puts
-      return if status.success?
-      error "Please run the command above after install is complete"
     end
   end
 end
