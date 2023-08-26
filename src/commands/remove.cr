@@ -15,7 +15,7 @@ module Crimson::Commands
       config = Config.load
 
       target = arguments.get("target").as_s
-      if version = config.aliases[target]?
+      if version = config.aliases.delete target
         target = version
       end
 
@@ -24,7 +24,7 @@ module Crimson::Commands
         system_exit
       end
 
-      config.current = nil if config.current == target
+      config.current = config.default if config.current == target
       config.save
 
       FileUtils.rm_rf ENV::CRYSTAL_PATH / target
