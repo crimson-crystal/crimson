@@ -71,7 +71,7 @@ module Crimson::Commands
       end
 
       puts "Unpacking archive to destination..."
-      stdout << "\e[?25l0 files unpacked\r"
+      stderr << "\e[?25l0 files unpacked\r"
       count = size = 0i32
 
       Compress::Gzip::Reader.open archive.path do |gzip|
@@ -89,12 +89,13 @@ module Crimson::Commands
               size += entry.size
             end
 
-            stdout << count << " files unpacked (" << size.humanize_bytes << ")\r"
+            stderr << count << " files unpacked (" << size.humanize_bytes << ")\r"
           end
         end
       end
 
-      puts "#{count} files unpacked (#{size.humanize_bytes})\e[?25h"
+      stderr << "\e[?25h\n"
+      puts "#{count} files unpacked (#{size.humanize_bytes})"
       puts "Ensuring file permissions"
       File.chmod path / "bin" / "crystal", 0o755
       File.chmod path / "bin" / "shards", 0o755
