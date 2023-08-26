@@ -41,7 +41,7 @@ module Crimson::Commands
       end
 
       if path = Process.find_executable "crystal"
-        unless File.info(path).type.symlink?
+        unless path == "/usr/local/bin/crystal"
           warn "Crystal appears to be installed without Crimson"
           warn "Please uninstall it before attempting to install with Crimson"
         end
