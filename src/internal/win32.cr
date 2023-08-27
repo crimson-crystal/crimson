@@ -28,29 +28,29 @@ module Crimson::Internal
   end
 
   def self.switch(path : Path) : Nil
-    if File.symlink? ENV::BIN_PATH / "crystal.exe"
-      File.delete ENV::BIN_PATH / "crystal.exe"
+    if File.symlink? ENV::LIBRARY_BIN / "crystal.exe"
+      File.delete ENV::LIBRARY_BIN / "crystal.exe"
     end
-    File.symlink path / "crystal.exe", ENV::BIN_PATH / "crystal.exe"
+    File.symlink path / "crystal.exe", ENV::LIBRARY_BIN / "crystal.exe"
 
-    if File.symlink? ENV::BIN_PATH / "crystal.pdb"
-      File.delete ENV::BIN_PATH / "crystal.pdb"
+    if File.symlink? ENV::LIBRARY_BIN / "crystal.pdb"
+      File.delete ENV::LIBRARY_BIN / "crystal.pdb"
     end
-    File.symlink path / "crystal.pdb", ENV::BIN_PATH / "crystal.pdb"
+    File.symlink path / "crystal.pdb", ENV::LIBRARY_BIN / "crystal.pdb"
 
-    if File.symlink? ENV::BIN_PATH / "shards.exe"
-      File.delete ENV::BIN_PATH / "shards.exe"
+    if File.symlink? ENV::LIBRARY_BIN / "shards.exe"
+      File.delete ENV::LIBRARY_BIN / "shards.exe"
     end
-    File.symlink path / "shards.exe", ENV::BIN_PATH / "shards.exe"
+    File.symlink path / "shards.exe", ENV::LIBRARY_BIN / "shards.exe"
   end
 
   def self.link_crystal_executable : Nil
-    File.symlink ENV::BIN_PATH / "crystal.exe", ENV::TARGET_CRYSTAL_BIN
-    File.symlink ENV::BIN_PATH / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
+    File.symlink ENV::LIBRARY_BIN / "crystal.exe", ENV::TARGET_BIN_CRYSTAL
+    File.symlink ENV::LIBRARY_BIN / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
   end
 
   def self.link_shards_executable : Nil
-    File.symlink ENV::BIN_PATH / "shards.exe", ENV::TARGET_SHARDS_BIN
+    File.symlink ENV::LIBRARY_BIN / "shards.exe", ENV::TARGET_BIN_SHARDS
   end
 
   def self.install_dependencies(prompt : Bool) : Nil

@@ -34,7 +34,7 @@ module Crimson::Commands
         system_exit
       end
 
-      Internal.switch ENV::CRYSTAL_PATH / target
+      Internal.switch ENV::LIBRARY_CRYSTAL / target
       config.current = target
       config.save
     end

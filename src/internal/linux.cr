@@ -31,19 +31,19 @@ module Crimson::Internal
   end
 
   def self.switch(path : Path) : Nil
-    if File.symlink? ENV::BIN_PATH / "crystal"
-      File.delete ENV::BIN_PATH / "crystal"
+    if File.symlink? ENV::LIBRARY_BIN / "crystal"
+      File.delete ENV::LIBRARY_BIN / "crystal"
     end
-    File.symlink path / "bin" / "crystal", ENV::BIN_PATH / "crystal"
+    File.symlink path / "bin" / "crystal", ENV::LIBRARY_BIN / "crystal"
 
-    if File.symlink? ENV::BIN_PATH / "shards"
-      File.delete ENV::BIN_PATH / "shards"
+    if File.symlink? ENV::LIBRARY_BIN / "shards"
+      File.delete ENV::LIBRARY_BIN / "shards"
     end
-    File.symlink path / "bin" / "shards", ENV::BIN_PATH / "shards"
+    File.symlink path / "bin" / "shards", ENV::LIBRARY_BIN / "shards"
   end
 
   def self.link_crystal_executable : Nil
-    args = {"ln", "-s", (ENV::BIN_PATH / "crystal").to_s, ENV::TARGET_CRYSTAL_BIN}
+    args = {"ln", "-s", (ENV::LIBRARY_BIN / "crystal").to_s, ENV::TARGET_BIN_CRYSTAL}
     puts "Running command:"
     puts "sudo #{args.join ' '}".colorize.bold
     puts
@@ -57,7 +57,7 @@ module Crimson::Internal
   end
 
   def self.link_shards_executable : Nil
-    args = {"ln", "-s", (ENV::BIN_PATH / "crystal").to_s, ENV::TARGET_SHARDS_BIN}
+    args = {"ln", "-s", (ENV::LIBRARY_BIN / "crystal").to_s, ENV::TARGET_BIN_SHARDS}
     puts "Running command:"
     puts "sudo #{args.join ' '}".colorize.bold
     puts

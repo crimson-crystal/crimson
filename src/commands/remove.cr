@@ -27,7 +27,7 @@ module Crimson::Commands
       config.current = config.default if config.current == target
       config.save
 
-      FileUtils.rm_rf ENV::CRYSTAL_PATH / target
+      FileUtils.rm_rf ENV::LIBRARY_CRYSTAL / target
     end
   end
 end

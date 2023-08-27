@@ -41,27 +41,27 @@ module Crimson::Commands
       end
 
       if path = Process.find_executable "crystal"
-        unless path == ENV::TARGET_CRYSTAL_BIN
+        unless path == ENV::TARGET_BIN_CRYSTAL
           warn "Crystal appears to be installed without Crimson"
           warn "Please uninstall it before attempting to install with Crimson"
         end
       end
 
-      unless Dir.exists? ENV::BIN_PATH
+      unless Dir.exists? ENV::LIBRARY_BIN
         puts "Creating executables path"
-        Dir.mkdir_p ENV::BIN_PATH
+        Dir.mkdir_p ENV::LIBRARY_BIN
       end
 
-      if File.exists? ENV::TARGET_CRYSTAL_BIN
-        if File.symlink? ENV::TARGET_CRYSTAL_BIN
-          link = File.readlink ENV::TARGET_CRYSTAL_BIN
-          unless link == ENV::BIN_PATH_CRYSTAL.to_s
+      if File.exists? ENV::TARGET_BIN_CRYSTAL
+        if File.symlink? ENV::TARGET_BIN_CRYSTAL
+          link = File.readlink ENV::TARGET_BIN_CRYSTAL
+          unless link == ENV::LIBRARY_BIN_CRYSTAL.to_s
             puts "Linking Crystal executable path"
             Internal.link_crystal_executable
           end
         else
           warn "File exists in Crystal executable location:"
-          warn ENV::TARGET_CRYSTAL_BIN.to_s
+          warn ENV::TARGET_BIN_CRYSTAL.to_s
           warn "Please rename or remove it"
         end
       else
@@ -69,16 +69,16 @@ module Crimson::Commands
         Internal.link_crystal_executable
       end
 
-      if File.exists? ENV::TARGET_SHARDS_BIN
-        if File.symlink? ENV::TARGET_SHARDS_BIN
-          link = File.readlink ENV::TARGET_SHARDS_BIN
-          unless link == ENV::BIN_PATH_SHARDS.to_s
+      if File.exists? ENV::TARGET_BIN_SHARDS
+        if File.symlink? ENV::TARGET_BIN_SHARDS
+          link = File.readlink ENV::TARGET_BIN_SHARDS
+          unless link == ENV::LIBRARY_BIN_SHARDS.to_s
             puts "Linking Shards executable path"
             Internal.link_shards_executable
           end
         else
           warn "File exists in Shards executable location:"
-          warn ENV::TARGET_SHARDS_BIN.to_s
+          warn ENV::TARGET_BIN_SHARDS.to_s
           warn "Please rename or remove it"
         end
       else

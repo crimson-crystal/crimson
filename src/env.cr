@@ -5,11 +5,11 @@ module Crimson::ENV
               Path[::ENV["XDG_DATA_HOME"]? || Path.home / ".local" / "share" / "crimson"]
             {% end %}
 
-  CRYSTAL_PATH = LIBRARY / "crystal"
-  BIN_PATH     = LIBRARY / "bin"
+  LIBRARY_CRYSTAL = LIBRARY / "crystal"
+  LIBRARY_BIN     = LIBRARY / "bin"
 
-  BIN_PATH_CRYSTAL = BIN_PATH / {% if flag?(:win32) %}"crystal.exe"{% else %}"crystal"{% end %}
-  BIN_PATH_SHARDS  = BIN_PATH / {% if flag?(:win32) %}"shards.exe"{% else %}"shards"{% end %}
+  LIBRARY_BIN_CRYSTAL = LIBRARY_BIN / {% if flag?(:win32) %}"crystal.exe"{% else %}"crystal"{% end %}
+  LIBRARY_BIN_SHARDS  = LIBRARY_BIN / {% if flag?(:win32) %}"shards.exe"{% else %}"shards"{% end %}
 
   TARGET_IDENTIFIER = {% if flag?(:win32) %}
                         "windows-x86_64-msvc-unsupported.zip"
@@ -19,20 +19,20 @@ module Crimson::ENV
                         "1-linux-x86_64.tar.gz"
                       {% end %}
 
-  TARGET_CRYSTAL_BIN = {% if flag?(:win32) %}
+  TARGET_BIN_CRYSTAL = {% if flag?(:win32) %}
                          File.join ::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.exe"
                        {% else %}
                          "/usr/local/bin/crystal"
                        {% end %}
 
-  TARGET_SHARDS_BIN = {% if flag?(:win32) %}
+  TARGET_BIN_SHARDS = {% if flag?(:win32) %}
                         File.join ::ENV["LOCALAPPDATA"], "Programs", "Crystal", "shards.exe"
                       {% else %}
                         "/usr/local/bin/shards"
                       {% end %}
 
   def self.installed?(version : String) : Bool
-    Dir.exists? CRYSTAL_PATH / version
+    Dir.exists? LIBRARY_BIN / version
   end
 
   @@versions = [] of String
@@ -55,8 +55,8 @@ module Crimson::ENV
   end
 
   def self.get_installed_versions : Array(String)
-    Dir.children(CRYSTAL_PATH).select do |child|
-      File.directory? CRYSTAL_PATH / child
+    Dir.children(LIBRARY_BIN).select do |child|
+      File.directory? LIBRARY_BIN / child
     end
   end
 end
