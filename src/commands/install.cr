@@ -72,12 +72,12 @@ module Crimson::Commands
         archive.close
       end
 
-      # Maybe some time in the future...
-      # at_exit do
-      #   archive.close unless archive.closed?
-      #   archive.delete
-      #   stderr << "\e[?25h"
-      # end
+      # TODO: monitoring
+      at_exit do
+        archive.close unless archive.closed?
+        archive.delete
+        stderr << "\e[?25h"
+      end
 
       puts "Unpacking archive to destination..."
       Internal.decompress path, archive.path
