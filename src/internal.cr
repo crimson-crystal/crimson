@@ -20,6 +20,26 @@ module Crimson::Internal
       end
     end
   end
+
+  {% for name in %w[CRYSTAL SHARDS] %}
+    private def self.setup_{{name.downcase.id}}_path? : Bool
+      if File.exists? ENV::TARGET_BIN_{{ name.id }}
+        if File.symlink? ENV::TARGET_BIN_{{ name.id }}
+          link = File.readlink ENV::TARGET_BIN_{{ name.id }}
+
+          link != ENV::LIBRARY_BIN_{{ name.id }}.to_s
+        else
+          true
+        end
+      else
+        warn "Unknown {{ name.downcase.id }} file at executable path:"
+        warn ENV::TARGET_BIN_{{ name.id }}
+        warn "Please rename or remove it"
+
+        false
+      end
+    end
+  {% end %}
 end
 
 {% if flag?(:win32) %}

@@ -42,32 +42,35 @@ module Crimson::Internal
     File.symlink path / "bin" / "shards", ENV::LIBRARY_BIN / "shards"
   end
 
-  def self.link_crystal_executable : Nil
-    args = {"ln", "-s", (ENV::LIBRARY_BIN / "crystal").to_s, ENV::TARGET_BIN_CRYSTAL}
-    puts "Running command:"
-    puts "sudo #{args.join ' '}".colorize.bold
-    puts
+  def self.setup_executable_paths : Nil
+    if setup_crystal_path?
+      args = {"ln", "-s", ENV::LIBRARY_BIN_CRYSTAL.to_s, ENV::TARGET_BIN_CRYSTAL}
+      puts "Running command:"
+      puts "sudo #{args.join ' '}".colorize.bold
+      puts
 
-    status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-    puts
+      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+      puts
 
-    return if status.success?
-    error "Please run the command below after the process is complete:"
-    puts args.join(' ').colorize.bold
-  end
+      unless status.success?
+        error "Please run the command above after the process is complete"
+        puts
+      end
+    end
 
-  def self.link_shards_executable : Nil
-    args = {"ln", "-s", (ENV::LIBRARY_BIN / "crystal").to_s, ENV::TARGET_BIN_SHARDS}
-    puts "Running command:"
-    puts "sudo #{args.join ' '}".colorize.bold
-    puts
+    if setup_shards_path?
+      args = {"ln", "-s", ENV::LIBRARY_BIN_SHARDS.to_s, ENV::TARGET_BIN_SHARDS}
+      puts "Running command:"
+      puts "sudo #{args.join ' '}".colorize.bold
+      puts
 
-    status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-    puts
+      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+      puts
 
-    return if status.success?
-    error "Please run the command below after the process is complete:"
-    puts args.join(' ').colorize.bold
+      return if status.success?
+      error "Please run the command above after the process is complete"
+      puts
+    end
   end
 
   def self.install_dependencies(prompt : Bool) : Nil

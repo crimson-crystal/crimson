@@ -44,13 +44,17 @@ module Crimson::Internal
     File.symlink path / "shards.exe", ENV::LIBRARY_BIN / "shards.exe"
   end
 
-  def self.link_crystal_executable : Nil
-    File.symlink ENV::LIBRARY_BIN / "crystal.exe", ENV::TARGET_BIN_CRYSTAL
-    File.symlink ENV::LIBRARY_BIN / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
-  end
+  def self.setup_executable_paths : Nil
+    Dir.mkdir_p Path[ENV::TARGET_BIN_CRYSTAL].dirname
 
-  def self.link_shards_executable : Nil
-    File.symlink ENV::LIBRARY_BIN / "shards.exe", ENV::TARGET_BIN_SHARDS
+    if setup_crystal_path?
+      File.symlink ENV::LIBRARY_BIN / "crystal.exe", ENV::TARGET_BIN_CRYSTAL
+      File.symlink ENV::LIBRARY_BIN / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
+    end
+
+    if setup_shards_path?
+      File.symlink ENV::LIBRARY_BIN / "shards.exe", ENV::TARGET_BIN_SHARDS
+    end
   end
 
   def self.install_dependencies(prompt : Bool) : Nil

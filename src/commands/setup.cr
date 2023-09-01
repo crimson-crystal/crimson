@@ -52,40 +52,8 @@ module Crimson::Commands
         Dir.mkdir_p ENV::LIBRARY_BIN
       end
 
-      if File.exists? ENV::TARGET_BIN_CRYSTAL
-        if File.symlink? ENV::TARGET_BIN_CRYSTAL
-          link = File.readlink ENV::TARGET_BIN_CRYSTAL
-          unless link == ENV::LIBRARY_BIN_CRYSTAL.to_s
-            puts "Linking Crystal executable path"
-            Internal.link_crystal_executable
-          end
-        else
-          warn "File exists in Crystal executable location:"
-          warn ENV::TARGET_BIN_CRYSTAL.to_s
-          warn "Please rename or remove it"
-        end
-      else
-        puts "Linking Crystal executable path"
-        Internal.link_crystal_executable
-      end
-
-      if File.exists? ENV::TARGET_BIN_SHARDS
-        if File.symlink? ENV::TARGET_BIN_SHARDS
-          link = File.readlink ENV::TARGET_BIN_SHARDS
-          unless link == ENV::LIBRARY_BIN_SHARDS.to_s
-            puts "Linking Shards executable path"
-            Internal.link_shards_executable
-          end
-        else
-          warn "File exists in Shards executable location:"
-          warn ENV::TARGET_BIN_SHARDS.to_s
-          warn "Please rename or remove it"
-        end
-      else
-        puts "Linking Shards executable path"
-        Internal.link_shards_executable
-      end
-
+      # puts "Checking executable paths"
+      Internal.setup_executable_paths
       return if options.has? "skip-dependencies"
 
       puts "Checking dependencies"
