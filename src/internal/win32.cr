@@ -1,6 +1,9 @@
 require "compress/zip"
 
 module Crimson::Internal
+  private REG_KEY_READ = 131097u32
+  private REG_KEY_WRITE = 131078u32
+
   def self.decompress(root : Path, path : String) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
     count = size = 0i32
@@ -54,6 +57,20 @@ module Crimson::Internal
 
     if setup_shards_path?
       File.symlink ENV::LIBRARY_BIN / "shards.exe", ENV::TARGET_BIN_SHARDS
+    end
+
+    err = LibC::RegOpenKeyExW(LibC::HKEY_CURRENT_USER, "Environment".to_wstr, 0, REG_KEY_READ | REG_KEY_WRITE, out hkey)
+    unless err == 0
+      puts "RegOpenKeyExW"
+      pp! err
+      return
+    end
+
+    err = LibC::RegQueryValueExW(hkey, "PATH".to_wstr, Pointer(Void).null, :none, out data, 2048.to_unsafe)
+    unless err == 0
+      puts "RegQueryValueExW"
+      pp! err
+      return
     end
   end
 
