@@ -22,12 +22,7 @@ module Crimson::Commands
       config = Config.load
 
       version = arguments.get?("version").try &.as_s
-      if version
-        unless version =~ /\d\.\d\.\d/
-          error "Invalid version format (must be major.minor.patch)"
-          system_exit
-        end
-      else
+      unless version
         verbose { "fetching available versions" }
         version = ENV.get_available_versions(options.has?("fetch"))[1]
       end
