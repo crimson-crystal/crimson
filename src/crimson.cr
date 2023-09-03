@@ -38,7 +38,7 @@ module Crimson
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-      stdout.puts help_template
+      puts help_template
     end
   end
 

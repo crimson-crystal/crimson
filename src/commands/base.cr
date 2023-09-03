@@ -19,7 +19,7 @@ module Crimson::Commands
       @verbose = true if options.has? "verbose"
 
       if options.has? "help"
-        stdout.puts help_template
+        puts help_template
 
         false
       else
@@ -85,15 +85,29 @@ module Crimson::Commands
 
     protected def verbose(& : ->) : Nil
       return unless @verbose
-      stdout << yield << '\n'
+      STDOUT << yield << '\n'
     end
+  end
+end
 
-    protected def warn(data : String) : Nil
-      stdout << "warn".colorize.yellow << ": " << data << '\n'
-    end
+def warn(data : _) : Nil
+  STDOUT << "warn".colorize.yellow << ": " << data << '\n'
+end
 
-    protected def error(data : String) : Nil
-      stderr << "error".colorize.red << ": " << data << '\n'
+def error(data : _) : Nil
+  STDERR << "error".colorize.red << ": " << data << '\n'
+end
+
+def should_continue? : Bool
+  loop do
+    print "\nDo you want to continue? (y/n) "
+    case gets.try &.chomp
+    when "y", "ye", "yes"
+      return true
+    when "n", "no"
+      return false
+    else
+      error "Invalid prompt answer (must be yes or no)"
     end
   end
 end
