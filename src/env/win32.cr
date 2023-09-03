@@ -5,9 +5,11 @@ module Crimson::ENV
   LIBRARY_BIN_CRYSTAL = LIBRARY_BIN / "crystal.exe"
   LIBRARY_BIN_SHARDS  = LIBRARY_BIN / "shards.exe"
 
-  TARGET_IDENTIFIER  = "windows-x86_64-msvc-unsupported.zip"
-  TARGET_BIN_CRYSTAL = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.exe"]
-  TARGET_BIN_SHARDS  = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal", "shards.exe"]
+  TARGET_IDENTIFIER = "windows-x86_64-msvc-unsupported.zip"
+
+  TARGET_BIN         = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal"]
+  TARGET_BIN_CRYSTAL = TARGET_BIN / "crystal.exe"
+  TARGET_BIN_SHARDS  = TARGET_BIN / "shards.exe"
 
   def self.decompress(root : Path, path : String) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
@@ -53,11 +55,11 @@ module Crimson::ENV
   end
 
   def self.setup_executable_paths : Nil
-    Dir.mkdir_p Path[TARGET_BIN_CRYSTAL].dirname
+    Dir.mkdir_p TARGET_BIN
 
     if setup_crystal_path?
       File.symlink LIBRARY_BIN / "crystal.exe", TARGET_BIN_CRYSTAL
-      File.symlink LIBRARY_BIN / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
+      File.symlink LIBRARY_BIN / "crystal.pdb", TARGET_BIN / "crystal.pdb"
     end
 
     if setup_shards_path?
@@ -75,6 +77,10 @@ module Crimson::ENV
       warn "Registry: HKEY_CURRENT_USER\\Environment\\PATH"
       return
     end
+
+    return if path.split(';').map(&.chomp('\\')).includes? TARGET_BIN.to_s
+
+    puts "Adding executables to PATH"
   end
 
   def self.install_dependencies(prompt : Bool) : Nil
