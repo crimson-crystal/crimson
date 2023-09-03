@@ -59,17 +59,15 @@ module Crimson::Internal
       File.symlink ENV::LIBRARY_BIN / "shards.exe", ENV::TARGET_BIN_SHARDS
     end
 
-    err = LibC.RegOpenKeyExW(LibC::HKEY_CURRENT_USER, "Environment".to_wstr, 0, REG_KEY_READ | REG_KEY_WRITE, out hkey)
-    unless err == 0
-      puts "RegOpenKeyExW"
-      pp! err
-      return
+    path = String.build do |io|
+      Crystal::System::WindowsRegistry.open? LibC::HKEY_CURRENT_USER, "Environment".to_utf16 do |handle|
+        io << Crystal::System::WindowsRegistry.get_string handle, "PATH".to_utf16
+      end
     end
 
-    err = LibC.RegQueryValueExW(hkey, "PATH".to_wstr, Pointer(Void).null, :none, out data, 2048.to_unsafe)
-    unless err == 0
-      puts "RegQueryValueExW"
-      pp! err
+    if path.empty?
+      warn "PATH environment variable not found in system"
+      warn "Registry: HKEY_CURRENT_USER\\Environment\\PATH"
       return
     end
   end
