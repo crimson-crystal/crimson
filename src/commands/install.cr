@@ -72,11 +72,10 @@ module Crimson::Commands
         archive.close
       end
 
-      # TODO: monitoring
       at_exit do
         archive.close unless archive.closed?
         archive.delete
-        stderr << "\e[?25h"
+        STDERR << "\e[?25h"
       end
 
       puts "Unpacking archive to destination..."
@@ -112,12 +111,6 @@ module Crimson::Commands
 
       puts "Cleaning up processes..."
       config.save
-    ensure
-      # TODO: find a way to get this into `at_exit`
-      if arc = archive
-        arc.close unless arc.closed?
-        arc.delete
-      end
     end
   end
 end
