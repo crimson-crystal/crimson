@@ -33,7 +33,7 @@ module Crimson::Commands
           system_exit
         end
 
-        Internal.switch ENV::LIBRARY_CRYSTAL / default
+        ENV.switch ENV::LIBRARY_CRYSTAL / default
         config.default = config.current
         config.current = default
         config.save
@@ -49,7 +49,7 @@ module Crimson::Commands
         system_exit
       end
 
-      Internal.switch ENV::LIBRARY_CRYSTAL / target
+      ENV.switch ENV::LIBRARY_CRYSTAL / target
       config.current = target
       config.save
     end

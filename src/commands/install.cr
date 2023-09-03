@@ -80,7 +80,7 @@ module Crimson::Commands
       end
 
       puts "Unpacking archive to destination..."
-      Internal.decompress path, archive.path
+      ENV.decompress path, archive.path
 
       {% unless flag?(:win32) %}
         puts "Ensuring file permissions"
@@ -104,7 +104,7 @@ module Crimson::Commands
 
       if options.has? "switch"
         puts "Switching Crystal versions..."
-        Internal.switch path
+        ENV.switch path
         config.current = version
 
         puts "Switched current Crystal to #{version}"

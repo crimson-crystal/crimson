@@ -1,35 +1,6 @@
 module Crimson::ENV
-  LIBRARY = {% if flag?(:win32) %}
-              Path[::ENV["APPDATA"], "crimson"]
-            {% else %}
-              Path[::ENV["XDG_DATA_HOME"]? || Path.home / ".local" / "share" / "crimson"]
-            {% end %}
-
   LIBRARY_CRYSTAL = LIBRARY / "crystal"
   LIBRARY_BIN     = LIBRARY / "bin"
-
-  LIBRARY_BIN_CRYSTAL = LIBRARY_BIN / {% if flag?(:win32) %}"crystal.exe"{% else %}"crystal"{% end %}
-  LIBRARY_BIN_SHARDS  = LIBRARY_BIN / {% if flag?(:win32) %}"shards.exe"{% else %}"shards"{% end %}
-
-  TARGET_IDENTIFIER = {% if flag?(:win32) %}
-                        "windows-x86_64-msvc-unsupported.zip"
-                      {% elsif flag?(:darwin) %}
-                        "1-darwin-universal.pkg"
-                      {% else %}
-                        "1-linux-x86_64.tar.gz"
-                      {% end %}
-
-  TARGET_BIN_CRYSTAL = {% if flag?(:win32) %}
-                         File.join ::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.exe"
-                       {% else %}
-                         "/usr/local/bin/crystal"
-                       {% end %}
-
-  TARGET_BIN_SHARDS = {% if flag?(:win32) %}
-                        File.join ::ENV["LOCALAPPDATA"], "Programs", "Crystal", "shards.exe"
-                      {% else %}
-                        "/usr/local/bin/shards"
-                      {% end %}
 
   def self.installed?(version : String) : Bool
     Dir.exists? LIBRARY_CRYSTAL / version
@@ -59,4 +30,32 @@ module Crimson::ENV
       File.directory? LIBRARY_CRYSTAL / child
     end
   end
+
+  {% for name in %w[CRYSTAL SHARDS] %}
+    private def self.setup_{{name.downcase.id}}_path? : Bool
+      if File.exists? ENV::TARGET_BIN_{{ name.id }}
+        if File.symlink? ENV::TARGET_BIN_{{ name.id }}
+          link = File.readlink ENV::TARGET_BIN_{{ name.id }}
+
+          link != ENV::LIBRARY_BIN_{{ name.id }}.to_s
+        else
+          true
+        end
+      else
+        warn "Unknown {{ name.downcase.id }} file at executable path:"
+        warn ENV::TARGET_BIN_{{ name.id }}
+        warn "Please rename or remove it"
+
+        false
+      end
+    end
+  {% end %}
 end
+
+{% if flag?(:win32) %}
+  require "./env/win32"
+{% elsif !flag?(:darwin) %}
+  require "./env/linux"
+{% else %}
+  {% raise "unsupported platform target" %}
+{% end %}

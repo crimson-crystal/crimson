@@ -1,8 +1,13 @@
 require "compress/zip"
 
-module Crimson::Internal
-  private REG_KEY_READ = 131097u32
-  private REG_KEY_WRITE = 131078u32
+module Crimson::ENV
+  LIBRARY             = Path[::ENV["APPDATA"], "crimson"]
+  LIBRARY_BIN_CRYSTAL = LIBRARY_BIN / "crystal.exe"
+  LIBRARY_BIN_SHARDS  = LIBRARY_BIN / "shards.exe"
+
+  TARGET_IDENTIFIER  = "windows-x86_64-msvc-unsupported.zip"
+  TARGET_BIN_CRYSTAL = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.exe"]
+  TARGET_BIN_SHARDS  = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal", "shards.exe"]
 
   def self.decompress(root : Path, path : String) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
@@ -31,32 +36,32 @@ module Crimson::Internal
   end
 
   def self.switch(path : Path) : Nil
-    if File.symlink? ENV::LIBRARY_BIN / "crystal.exe"
-      File.delete ENV::LIBRARY_BIN / "crystal.exe"
+    if File.symlink? LIBRARY_BIN / "crystal.exe"
+      File.delete LIBRARY_BIN / "crystal.exe"
     end
-    File.symlink path / "crystal.exe", ENV::LIBRARY_BIN / "crystal.exe"
+    File.symlink path / "crystal.exe", LIBRARY_BIN / "crystal.exe"
 
-    if File.symlink? ENV::LIBRARY_BIN / "crystal.pdb"
-      File.delete ENV::LIBRARY_BIN / "crystal.pdb"
+    if File.symlink? LIBRARY_BIN / "crystal.pdb"
+      File.delete LIBRARY_BIN / "crystal.pdb"
     end
-    File.symlink path / "crystal.pdb", ENV::LIBRARY_BIN / "crystal.pdb"
+    File.symlink path / "crystal.pdb", LIBRARY_BIN / "crystal.pdb"
 
-    if File.symlink? ENV::LIBRARY_BIN / "shards.exe"
-      File.delete ENV::LIBRARY_BIN / "shards.exe"
+    if File.symlink? LIBRARY_BIN / "shards.exe"
+      File.delete LIBRARY_BIN / "shards.exe"
     end
-    File.symlink path / "shards.exe", ENV::LIBRARY_BIN / "shards.exe"
+    File.symlink path / "shards.exe", LIBRARY_BIN / "shards.exe"
   end
 
   def self.setup_executable_paths : Nil
-    Dir.mkdir_p Path[ENV::TARGET_BIN_CRYSTAL].dirname
+    Dir.mkdir_p Path[TARGET_BIN_CRYSTAL].dirname
 
     if setup_crystal_path?
-      File.symlink ENV::LIBRARY_BIN / "crystal.exe", ENV::TARGET_BIN_CRYSTAL
-      File.symlink ENV::LIBRARY_BIN / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
+      File.symlink LIBRARY_BIN / "crystal.exe", TARGET_BIN_CRYSTAL
+      File.symlink LIBRARY_BIN / "crystal.pdb", File.join(::ENV["LOCALAPPDATA"], "Programs", "Crystal", "crystal.pdb")
     end
 
     if setup_shards_path?
-      File.symlink ENV::LIBRARY_BIN / "shards.exe", ENV::TARGET_BIN_SHARDS
+      File.symlink LIBRARY_BIN / "shards.exe", TARGET_BIN_SHARDS
     end
 
     path = String.build do |io|

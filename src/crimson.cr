@@ -8,7 +8,6 @@ require "./commands/base"
 require "./commands/*"
 require "./config"
 require "./env"
-require "./internal"
 
 module Crimson
   VERSION = "0.1.0"

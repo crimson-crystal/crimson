@@ -53,14 +53,14 @@ module Crimson::Commands
       end
 
       # puts "Checking executable paths"
-      Internal.setup_executable_paths
+      ENV.setup_executable_paths
       return if options.has? "skip-dependencies"
 
       puts "Checking dependencies"
-      Internal.install_dependencies !options.has?("yes")
+      ENV.install_dependencies !options.has?("yes")
 
       puts "Checking additional dependencies"
-      Internal.install_additional_dependencies !options.has?("yes")
+      ENV.install_additional_dependencies !options.has?("yes")
     end
   end
 end
