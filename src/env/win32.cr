@@ -79,8 +79,19 @@ module Crimson::ENV
     end
 
     return if path.split(';').map(&.chomp('\\')).includes? TARGET_BIN.to_s
-
     puts "Adding executables to PATH"
+
+    Crystal::System::WindowsRegistry.open? LibC::HKEY_CURRENT_USER, "Environment".to_utf16, LibC::REGSAM::READ | :WRITE do |handle|
+      value = Crystal::System::WindowsRegistry.get_string handle, "PATH".to_utf16
+      next unless value
+
+      path = value.chomp(';') + ";" + TARGET_BIN.to_s
+      status = LibC.RegSetValueExW handle, "PATH".to_utf16, 0, 1, path.to_utf16.to_unsafe.as(UInt8*), path.size * sizeof(UInt16)
+      err = WinError.new status
+
+      next if err.error_success?
+      raise RuntimeError.from_os_error "RegSetValueExW", err
+    end
   end
 
   def self.install_dependencies(prompt : Bool) : Nil
@@ -89,4 +100,8 @@ module Crimson::ENV
   def self.install_additional_dependencies(prompt : Bool) : Nil
     puts "No additional dependencies for this platform"
   end
+end
+
+lib LibC
+  fun RegSetValueExW(hKey : HKEY, lpValueName : LPWSTR, reserved : DWORD, dwType : DWORD, lpData : BYTE*, cbData : DWORD) : LSTATUS
 end
