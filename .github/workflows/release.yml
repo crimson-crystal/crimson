@@ -1,17 +1,16 @@
-name: CI
+name: Release
 
 on:
   push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
-  test:
+  linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,10 +21,43 @@ jobs:
           crystal: latest
 
       - name: Install Dependencies
-        run: shards install --frozen
+        run: shards install --production
 
-      - name: Check Format
-        run: crystal tool format --check
+      - name: Compile Binaries
+        run: |
+          crystal build src/main.cr --no-debug -o crimson --release
+          sha256sum crimson > checksums.txt
+          tar -zcf crimson-${{ github.ref_name }}-linux-x86_64.tar.gz crimson checksums.txt
 
-      - name: Run Lints
-        run: bin/ameba
+      - name: Upload Package
+        run: |
+          gh release create ${{ github.ref_name }} -dt ${{ github.ref_name }} --verify-tag
+          gh release upload ${{ github.ref_name }} crimson-${{ github.ref_name }}-linux-x86_64.tar.gz
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - name: Install Dependencies
+        run: shards install --production
+
+      - name: Compile Binaries
+        run: |
+          crystal build src\main.cr --no-debug -o crimson.exe --release
+          Get-FileHash crimson.exe | Select-Object Hash | Format-Table -HideTableHeaders | Out-File checksums.txt
+          Compress-Archive crimson.exe crimson-${{ github.ref_name }}-windows-x86_64-msvc.zip checksums.txt
+
+      - name: Upload Package
+        run: |
+          gh release create ${{ github.ref_name }} -dt ${{ github.ref_name }} --verify-tag
+          gh release upload ${{ github.ref_name }} crimson-${{ github.ref_name }}-windows-x86_64-msvc.zip
