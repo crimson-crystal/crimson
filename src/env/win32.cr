@@ -104,6 +104,13 @@ module Crimson::ENV
       return if File.executable? cl
     end
 
+    if prompt
+      puts "Crystal requires Microsoft Visual Studio (MSVC) Build Tools"
+      puts "to compile programs (available at https://aka.ms/vs/17/release/vs_community.exe)"
+      return unless should_continue?
+      puts
+    end
+
     puts "Downloading Visual Studio installer"
 
     exe = File.tempfile "vs_setup.exe" do |file|
