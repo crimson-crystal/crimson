@@ -1,4 +1,6 @@
 require "compress/zip"
+require "crystal/system/win32/visual_studio"
+require "crystal/system/win32/windows_sdk"
 
 module Crimson::ENV
   LIBRARY             = Path[::ENV["APPDATA"], "crimson"]
@@ -10,6 +12,8 @@ module Crimson::ENV
   TARGET_BIN         = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal"]
   TARGET_BIN_CRYSTAL = TARGET_BIN / "crystal.exe"
   TARGET_BIN_SHARDS  = TARGET_BIN / "shards.exe"
+
+  HOST_BITS = {{ flag?(:aarch64) ? "ARM64" : flag?(:bits64) ? "x64" : "x86" }}
 
   def self.decompress(root : Path, path : String) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
@@ -95,6 +99,35 @@ module Crimson::ENV
   end
 
   def self.install_dependencies(prompt : Bool) : Nil
+    if msvc = Crystal::System::VisualStudio.find_latest_msvc_path
+      cl = msvc / "bin" / "Host#{HOST_BITS}" / HOST_BITS / "cl.exe"
+      return if File.executable? cl
+    end
+
+    puts "Downloading Visual Studio installer"
+
+    exe = File.tempfile "vs_setup.exe" do |file|
+      Crest.get "https://aka.ms/vs/17/release/vs_community.exe" do |res|
+        IO.copy res.body_io, file
+      end
+    end
+
+    args = %w[--wait --focusedUi --addProductLang En-us --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64]
+    if Crystal::System::WindowsSDK.find_win10_sdk_libpath.nil?
+      args << "--add" << "Microsoft.VisualStudio.Component.Windows11SDK.22000"
+    end
+
+    puts "Running the Visual Studio installer..."
+    puts "This process will continue after the installer is done"
+
+    # BUG: autocasting doesn't work here for some reason
+    inherit = Process::Redirect::Inherit
+    status = Process.run exe.path, args, input: inherit, output: inherit, error: inherit
+
+    exe.delete
+    return if status.success?
+    error "Please complete the Visual Studio installation manually:"
+    error "https://aka.ms/vs/17/release/vs_community.exe"
   end
 
   def self.install_additional_dependencies(prompt : Bool) : Nil
