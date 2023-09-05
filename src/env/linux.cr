@@ -66,19 +66,18 @@ module Crimson::ENV
       end
     end
 
-    if setup_shards_path?
-      args = {"ln", "-s", LIBRARY_BIN_SHARDS.to_s, TARGET_BIN_SHARDS}
-      puts "Running command:"
-      puts "sudo #{args.join ' '}".colorize.bold
-      puts
+    return unless setup_shards_path?
+    args = {"ln", "-s", LIBRARY_BIN_SHARDS.to_s, TARGET_BIN_SHARDS}
+    puts "Running command:"
+    puts "sudo #{args.join ' '}".colorize.bold
+    puts
 
-      status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
-      puts
+    status = Process.run "sudo", args, input: :inherit, output: :inherit, error: :inherit
+    puts
 
-      return if status.success?
-      error "Please run the command above after the process is complete"
-      puts
-    end
+    return if status.success?
+    error "Please run the command above after the process is complete"
+    puts
   end
 
   def self.install_dependencies(prompt : Bool) : Nil
