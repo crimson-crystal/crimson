@@ -2,7 +2,7 @@ module Crimson::Commands
   class List < Base
     private class Result
       getter version : String
-      property alias : String?
+      property! alias : String
       property path : String?
 
       def initialize(@version)
@@ -32,13 +32,19 @@ module Crimson::Commands
 
       config = Config.load
       _alias = options.has? "alias"
+      max_alias = 0
       path = options.has? "path"
       results = installed.map { |version| Result.new version }
 
       if _alias && !config.aliases.empty?
+        aliases = config.aliases.invert
+        if path
+          max_alias = 2 + aliases.values.max_of &.size
+        end
+
         results.each do |result|
-          if value = config.aliases[result.version]?
-            result.alias = value
+          if name = aliases[result.version]?
+            result.alias = name
           end
         end
       end
@@ -52,7 +58,12 @@ module Crimson::Commands
       results.each do |result|
         stdout << result.version << "  "
         stdout << result.alias if _alias
-        stdout << result.path if path
+        if path
+          if _alias
+            stdout << " " * (max_alias - result.alias.size)
+          end
+          stdout << result.path
+        end
         stdout << '\n'
       end
     rescue File::NotFoundError
