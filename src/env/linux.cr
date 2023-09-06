@@ -163,7 +163,7 @@ module Crimson::ENV
            end
     return nil unless id_like = info[""]["ID_LIKE"]?
 
-    case distro = id_like.strip '"'
+    case id_like.strip '"'
     when "ubuntu", "debian", "ubuntu debian"
       %w[apt-get install -y]
     when "alpine"
