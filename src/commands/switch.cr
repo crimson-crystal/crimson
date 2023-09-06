@@ -11,6 +11,7 @@ module Crimson::Commands
         swap the current version with the default version then switch to it.
         DESC
 
+      add_alias "use"
       add_usage "switch"
       add_usage "switch ."
       add_usage "switch [-v|--verbose] <target>"

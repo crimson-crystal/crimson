@@ -9,6 +9,7 @@ module Crimson::Commands
         fetched from the Crystal API by specifying the '--fetch' option.
         DESC
 
+      add_alias "in"
       add_usage "install [-a|--alias <name>] [-f|--fetch] [-s|--switch] [version]"
 
       add_argument "version", description: "the version to install"

@@ -22,7 +22,7 @@ To get started, simply run `crimson setup`. This will setup the necessary config
 > **Note**
 > Crystal's dependencies are not typically readily available on most systems so you will need to install them manually if you choose to skip them in the command.
 
-Next, install Crystal using `crimson install`. By default this will install the latest available version unless you specify one (for example, `crimson install 1.9.2`). You can install any Crystal version that is available on the [Crystal GitHub releases page](https://github.com/crystal-lang/crystal/releases). This unfortunately means that nightly builds cannot be installed via Crimson yet.
+Next, install Crystal using `crimson install` (or `crimson in`). By default this will install the latest available version unless you specify one (for example, `crimson install 1.9.2`). You can install any Crystal version that is available on the [Crystal GitHub releases page](https://github.com/crystal-lang/crystal/releases). This unfortunately means that nightly builds cannot be installed via Crimson yet.
 
 Finally, run the `crimson switch <version>` command to make that version of Crystal available on your system. You can also do this automatically by including the `-s`/`--switch` flag in `crimson install`. Now, try `crystal version`! To put this in perspective, you just setup and installed Crystal with 3 simple commands:
 
@@ -38,7 +38,7 @@ Versions can be aliased to make using them easier: run `crimson alias <name> <ve
 
 ### Switching
 
-You can switch between Crystal versions using `crimson switch <version>`. If the version you wish to switch to has an alias, you can use that instead (for example, `crimson switch dev`). Versions can also be switched to automatically in the install command by including the `-s`/`--switch` flag.
+You can switch between Crystal versions using `crimson switch <version>` (or `crimson use`). If the version you wish to switch to has an alias, you can use that instead (for example, `crimson switch dev`). Versions can also be switched to automatically in the install command by including the `-s`/`--switch` flag.
 
 ### Defaults
 
@@ -50,7 +50,7 @@ You can also easily switch between your current and default version using `crims
 
 ### Removing
 
-Removing Crystal versions is as simple as `crimson remove <version>`, and you can use the alias in place of the version.
+Removing Crystal versions is as simple as `crimson remove <version>` (or `crimson rm`), and you can use the alias in place of the version.
 
 ### Useful Tricks
 
