@@ -27,7 +27,7 @@ jobs:
 
       - name: Upload Package
         run: |
-          gh release create nightly -dt nightly --verify-tag
+          gh release create nightly -dpt nightly --verify-tag
           gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
 
   windows:
@@ -56,5 +56,5 @@ jobs:
 
       - name: Upload Package
         run: |
-          gh release create nightly -dt nightly --verify-tag
+          gh release create nightly -dpt nightly --verify-tag
           gh release upload nightly crimson-nightly-windows-x86_64-msvc.zip
