@@ -1,0 +1,60 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - name: Install Dependencies
+        run: shards install --production
+
+      - name: Compile Binaries
+        run: |
+          crystal build src/main.cr -o crimson
+          sha256sum crimson > checksums.txt
+          tar -zcf crimson-nightly-linux-x86_64.tar.gz crimson checksums.txt
+
+      - name: Upload Package
+        run: |
+          gh release create nightly -dt nightly --verify-tag
+          gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - name: Install Dependencies
+        run: shards install --production
+
+      - name: Compile Binaries
+        run: |
+          crystal build src\main.cr -o crimson.exe
+          Get-FileHash crimson.exe | Select-Object Hash | Format-Table -HideTableHeaders | Out-File checksums.txt
+          $compress = @{
+            Path = "crimson.exe", "crimson.pdb", "checksums.txt"
+            DestinationPath = "crimson-nightly-windows-x86_64-msvc.zip"
+          }
+          Compress-Archive @compress
+
+      - name: Upload Package
+        run: |
+          gh release create nightly -dt nightly --verify-tag
+          gh release upload nightly crimson-nightly-windows-x86_64-msvc.zip
