@@ -4,7 +4,13 @@ module Crimson::Commands
       if header = command.header
         io << header << "\n\n"
       else
-        io << "Command ".colorize.red << command.name << "\n\n"
+        io << "Command ".colorize.red << command.name
+        unless command.aliases.empty?
+          io << " ("
+          command.aliases.join io, '/'
+          io << ')'
+        end
+        io << "\n\n"
       end
 
       if description = command.description
@@ -13,9 +19,7 @@ module Crimson::Commands
 
       unless command.usage.empty?
         io << "Usage".colorize.red << '\n'
-        command.usage.each do |use|
-          io << "• " << use << '\n'
-        end
+        command.usage.each { |use| io << "• " << use << '\n' }
         io << '\n'
       end
 
