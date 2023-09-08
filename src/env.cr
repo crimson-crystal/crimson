@@ -54,7 +54,9 @@ end
 
 {% if flag?(:win32) %}
   require "./env/win32"
-{% elsif !flag?(:darwin) %}
+{% elsif flag?(:darwin) %}
+  require "./env/darwin"
+{% elsif flag?(:unix) %}
   require "./env/linux"
 {% else %}
   {% raise "unsupported platform target" %}
