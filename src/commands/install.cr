@@ -79,6 +79,14 @@ module Crimson::Commands
 
       {% unless flag?(:win32) %}
         puts "Ensuring file permissions"
+        if SemanticVersion.parse(version) < ENV::MIN_VERSION
+          puts "Resolving legacy paths..."
+          File.delete path / "bin" / "crystal"
+          File.delete path / "bin" / "shards"
+          File.rename path / "lib" / "crystal" / "bin" / "crystal", path / "bin" / "crystal"
+          File.rename path / "lib" / "crystal" / "bin" / "shards", path / "bin" / "shards"
+        end
+
         File.chmod path / "bin" / "crystal", 0o755
         File.chmod path / "bin" / "shards", 0o755
       {% end %}
