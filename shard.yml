@@ -27,4 +27,8 @@ development_dependencies:
 targets:
   crimson:
     main: src/main.cr
-    args: --stats
+    flags: --stats
+
+  darwin:
+    main: src/main.cr
+    flags: --cross-compile --target x86_64-darwin
