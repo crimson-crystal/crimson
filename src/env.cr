@@ -1,6 +1,6 @@
 module Crimson::ENV
-  LIBRARY_CRYSTAL = LIBRARY / "crystal"
   LIBRARY_BIN     = LIBRARY / "bin"
+  LIBRARY_CRYSTAL = LIBRARY / "crystal"
 
   def self.installed?(version : String) : Bool
     Dir.exists? LIBRARY_CRYSTAL / version
@@ -39,14 +39,14 @@ module Crimson::ENV
 
           link != ENV::LIBRARY_BIN_{{ name.id }}.to_s
         else
-          true
+          warn "Unknown {{ name.downcase.id }} file at executable path:"
+          warn ENV::TARGET_BIN_{{ name.id }}
+          warn "Please rename or remove it"
+
+          false
         end
       else
-        warn "Unknown {{ name.downcase.id }} file at executable path:"
-        warn ENV::TARGET_BIN_{{ name.id }}
-        warn "Please rename or remove it"
-
-        false
+        true
       end
     end
   {% end %}
