@@ -40,6 +40,13 @@ module Crimson::Commands
         system_exit
       end
 
+      {% if flag?(:win32) %}
+        if SemanticVersion.parse(version) < ENV::MIN_VERSION
+          error "Crystal is not available on Windows for versions below #{ENV::MIN_VERSION}"
+          system_exit
+        end
+      {% end %}
+
       path = ENV::LIBRARY_CRYSTAL / version
       puts "Installing Crystal version: #{version}"
       verbose { "ensuring directory: #{path}" }
