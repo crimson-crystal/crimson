@@ -41,7 +41,7 @@ module Crimson::Commands
       end
 
       if path = Process.find_executable "crystal"
-        unless path == ENV::TARGET_BIN_CRYSTAL
+        unless path == ENV::TARGET_BIN_CRYSTAL.to_s
           warn "Crystal appears to be installed without Crimson"
           warn "Please uninstall it before attempting to install with Crimson"
         end
