@@ -6,6 +6,8 @@ module Crimson::ENV
   LIBRARY_BIN_CRYSTAL = LIBRARY_BIN / "crystal"
   LIBRARY_BIN_SHARDS  = LIBRARY_BIN / "shards"
 
+  MIN_VERSION = SemanticVersion.new 1, 2, 0
+
   TARGET_IDENTIFIER  = "1-linux-x86_64.tar.gz"
   TARGET_BIN_CRYSTAL = "/usr/local/bin/crystal"
   TARGET_BIN_SHARDS  = "/usr/local/bin/shards"

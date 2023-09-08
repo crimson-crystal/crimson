@@ -3,6 +3,7 @@ require "colorize"
 require "crest"
 require "file_utils"
 require "ini"
+require "semantic_version"
 
 require "./commands/base"
 require "./commands/*"

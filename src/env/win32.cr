@@ -7,6 +7,8 @@ module Crimson::ENV
   LIBRARY_BIN_CRYSTAL = LIBRARY_BIN / "crystal.exe"
   LIBRARY_BIN_SHARDS  = LIBRARY_BIN / "shards.exe"
 
+  MIN_VERSION = SemanticVersion.new 1, 3, 0
+
   TARGET_IDENTIFIER = "windows-x86_64-msvc-unsupported.zip"
 
   TARGET_BIN         = Path[::ENV["LOCALAPPDATA"], "Programs", "Crystal"]
