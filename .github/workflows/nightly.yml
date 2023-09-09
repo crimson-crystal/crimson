@@ -30,7 +30,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
         run: |
-          gh release create nightly -dpt nightly --verify-tag
+          gh release view nightly &> /dev/null && gh release delete nightly -y
+          gh release create -dpt nightly
           gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
 
   windows:
@@ -61,6 +62,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-        run: |
-          gh release create nightly -dpt nightly --verify-tag
-          gh release upload nightly crimson-nightly-windows-x86_64-msvc.zip
+        run: gh release upload nightly crimson-nightly-windows-x86_64-msvc.zip
