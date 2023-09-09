@@ -27,4 +27,4 @@ development_dependencies:
 targets:
   crimson:
     main: src/main.cr
-    args: --stats
+    flags: --stats
