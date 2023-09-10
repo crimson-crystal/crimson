@@ -8,7 +8,9 @@ on:
     branches:
       - main
 
-permissions: write-all
+permissions:
+  actions: write
+  contents: write
 
 jobs:
   linux:
@@ -37,7 +39,7 @@ jobs:
 
         run: |
           gh release view nightly &> /dev/null && gh release delete nightly -y
-          gh release create nightly -dpt Nightly --notes "Nightly release for $(date +%F)."
+          gh release create nightly -pt Nightly --notes "Nightly release for $(date +%F)."
           gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
 
   windows:
