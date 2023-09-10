@@ -8,8 +8,7 @@ on:
     branches:
       - main
 
-permissions:
-  actions: write
+permissions: write-all
 
 jobs:
   linux:
