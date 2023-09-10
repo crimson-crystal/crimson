@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  actions: write
+
 jobs:
   linux:
     runs-on: ubuntu-latest
