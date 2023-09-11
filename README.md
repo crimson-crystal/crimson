@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="crimson-logo" src="assets/crimson_banner.png">
+  <img alt="crimson-logo" src="assets/crimson_banner.png" width="700">
   <h3 align="center">Crimson</h3>
   <p align="center">Crystal version management made easy</p>
 </p>
