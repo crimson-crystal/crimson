@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: 0 0 * * *
 
+  # debug
+  push:
+    branches: main
+
 permissions:
   actions: write
   contents: write
@@ -27,6 +31,13 @@ jobs:
         run: |
           crystal build src/main.cr -o crimson
           tar -zcf crimson-nightly-linux-x86_64.tar.gz crimson
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            crimson
+            crimson-nightly-linux-x86_64.tar.gz
 
   windows:
     needs: linux
@@ -52,6 +63,14 @@ jobs:
           }
           Compress-Archive @compress
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            crimson.exe
+            crimson.pdb
+            crimson-nightly-windows-x86_64-msvc.zip
+
   release:
     needs: windows
     runs-on: ubuntu-latest
@@ -59,8 +78,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+
       - name: Prepare Artifacts
-        run: sha256sum crimson crimson.exe crimson.pdb > checksums.txt
+        run: |
+          mv artifact/* ..
+          sha256sum crimson crimson.exe crimson.pdb > checksums.txt
 
       - name: Create Release
         env:
