@@ -4,6 +4,14 @@ on:
   schedule:
     - cron: 0 0 * * *
 
+  # debug
+  push:
+    branches: main
+
+permissions:
+  actions: write
+  contents: write
+
 jobs:
   linux:
     runs-on: ubuntu-latest
@@ -22,18 +30,18 @@ jobs:
       - name: Compile Binaries
         run: |
           crystal build src/main.cr -o crimson
-          sha256sum crimson > checksums.txt
-          tar -zcf crimson-nightly-linux-x86_64.tar.gz crimson checksums.txt
+          tar -zcf crimson-nightly-linux-x86_64.tar.gz crimson
 
-      - name: Upload Package
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-        run: |
-          gh release create nightly -dpt nightly --verify-tag
-          gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: crimson-linux
+          path: |
+            crimson
+            crimson-nightly-linux-x86_64.tar.gz
 
   windows:
+    needs: linux
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -50,17 +58,46 @@ jobs:
       - name: Compile Binaries
         run: |
           crystal build src\main.cr -o crimson.exe
-          Get-FileHash crimson.exe | Select-Object Hash | Format-Table -HideTableHeaders | Out-File checksums.txt
           $compress = @{
-            Path = "crimson.exe", "crimson.pdb", "checksums.txt"
+            Path = "crimson.exe", "crimson.pdb"
             DestinationPath = "crimson-nightly-windows-x86_64-msvc.zip"
           }
           Compress-Archive @compress
 
-      - name: Upload Package
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: crimson-windows
+          path: |
+            crimson.exe
+            crimson.pdb
+            crimson-nightly-windows-x86_64-msvc.zip
+
+  release:
+    needs: windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts/
+
+      - name: Prepare Artifacts
+        run: |
+          mv artifacts/crimson-linux/* .
+          mv artifacts/crimson-windows/* .
+          sha256sum crimson crimson.exe crimson.pdb > checksums.txt
+
+      - name: Create Release
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         run: |
-          gh release create nightly -dpt nightly --verify-tag
+          gh release view nightly &>/dev/null && gh release delete nightly -y
+          gh release create nightly -pt Nightly --notes "Nightly release for $(date +%F)."
+          gh release upload nightly checksums.txt
+          gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
           gh release upload nightly crimson-nightly-windows-x86_64-msvc.zip

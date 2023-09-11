@@ -1,16 +1,17 @@
-<h1 align="center">Crimson</h1>
-<h3 align="center">A Crystal Version Manager</h3>
-
----
+<p align="center">
+  <img alt="crimson-logo" src="assets/crimson_banner.png">
+  <h3 align="center">Crimson</h3>
+  <p align="center">Crystal version management made easy</p>
+</p>
 
 ## Installation
 
-See the [releases page](https://github.com/devnote-dev/crimson/releases/latest) for available releases.
-
 ### From Source
 
+[Crystal](https://crystal-lang.org) version 1.9.2 or higher is required to build Crimson. Make sure to add the `crimson` binary in `bin/` to a directory in `PATH`.
+
 ```sh
-git clone https://github.com/devnote-dev/crimson
+git clone https://github.com/crimson-crystal/crimson
 cd crimson
 shards build
 ```
@@ -79,7 +80,7 @@ Crimson caches available versions locally from the [Crystal API](https://crystal
 
 ## Contributing
 
-1. Fork it (<https://github.com/devnote-dev/crimson/fork>)
+1. Fork it (<https://github.com/crimson-crystal/crimson/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
