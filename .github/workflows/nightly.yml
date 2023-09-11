@@ -4,10 +4,6 @@ on:
   schedule:
     - cron: 0 0 * * *
 
-  # debug
-  push:
-    branches: main
-
 permissions:
   actions: write
   contents: write
@@ -35,7 +31,6 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: crimson-linux
           path: |
             crimson
             crimson-nightly-linux-x86_64.tar.gz
@@ -67,7 +62,6 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: crimson-windows
           path: |
             crimson.exe
             crimson.pdb
@@ -87,8 +81,7 @@ jobs:
 
       - name: Prepare Artifacts
         run: |
-          mv artifacts/crimson-linux/* .
-          mv artifacts/crimson-windows/* .
+          mv artifacts/* .
           sha256sum crimson crimson.exe crimson.pdb > checksums.txt
 
       - name: Create Release
