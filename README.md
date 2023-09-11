@@ -1,6 +1,6 @@
 <p align="center">
   <img alt="crimson-logo" src="assets/crimson_banner.png">
-  <h2 align="center">Crimson</h2>
+  <h3 align="center">Crimson</h3>
   <p align="center">Crystal version management made easy</p>
 </p>
 
@@ -80,7 +80,7 @@ Crimson caches available versions locally from the [Crystal API](https://crystal
 
 ## Contributing
 
-1. Fork it (<https://github.com/crystal-crimson/crimson/fork>)
+1. Fork it (<https://github.com/crimson-crystal/crimson/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
