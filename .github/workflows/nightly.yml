@@ -87,7 +87,9 @@ jobs:
 
       - name: Prepare Artifacts
         run: |
-          mv artifacts/ ..
+          tree artifacts
+          mv artifacts/crimson-linux/* ..
+          mv artifacts/crimson-windows/* ..
           sha256sum crimson crimson.exe crimson.pdb > checksums.txt
 
       - name: Create Release
