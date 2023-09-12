@@ -19,7 +19,7 @@ module Crimson
                  {{ `date +%F`.stringify.chomp }}
                {% end %}
 
-  BUILD_HASH = {{ `git rev-parse HEAD`.stringify[0...8] }}
+  BUILD_HASH = {{ env("CRIMSON_HASH") || `git rev-parse HEAD`.stringify[0...8] }}
 
   class App < Commands::Base
     def setup : Nil
