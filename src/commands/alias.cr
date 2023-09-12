@@ -13,7 +13,7 @@ module Crimson::Commands
 
       add_usage "alias"
       add_usage "alias <name> <version>"
-      add_usage "alias [-d|--delete] <name>"
+      add_usage "alias --delete <name>"
 
       add_argument "name", description: "the alias to set"
       add_argument "version", description: "the version to alias"

@@ -14,7 +14,7 @@ module Crimson::Commands
       add_alias "use"
       add_usage "switch"
       add_usage "switch ."
-      add_usage "switch [-v|--verbose] <target>"
+      add_usage "switch <target>"
 
       add_argument "target", description: "the version or version alias to switch to"
     end

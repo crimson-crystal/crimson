@@ -9,7 +9,9 @@ module Crimson::Commands
         remove the version as default.
         DESC
 
+      add_usage "default"
       add_usage "default [target]"
+      add_usage "default --delete"
 
       add_argument "target", description: "the version or alias to set"
       add_option 'd', "delete", description: "remove this as default"
