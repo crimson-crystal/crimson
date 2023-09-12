@@ -39,11 +39,11 @@ Expand-Archive .\crimson.zip .
 ```
 
 > **Note**
-> Make sure to add the `crimson` executable to a directory in `PATH`.
+> Make sure to add the `crimson.exe` and `crimson.pdb` files to a directory in `PATH`.
 
 ### From Source
 
-[Crystal](https://crystal-lang.org) version 1.9.2 or higher is required to build Crimson. Make sure to add the `crimson` binary in `bin/` to a directory in `PATH`.
+[Crystal](https://crystal-lang.org) version 1.9.2 or higher is required to build Crimson. Make sure to add the `bin/` directory to `PATH` or move the Crimson binaries to a directory in `PATH`.
 
 ```sh
 git clone https://github.com/crimson-crystal/crimson
