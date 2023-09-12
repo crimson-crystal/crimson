@@ -45,12 +45,12 @@ module Crimson::Commands
         if version = config.aliases[target]?
           target = version
         end
-  
+
         unless ENV.installed? target
           error "Crystal version #{target} is not installed"
           system_exit
         end
-  
+
         ENV.switch ENV::LIBRARY_CRYSTAL / target
         config.current = target
         config.save
