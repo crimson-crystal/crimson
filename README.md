@@ -6,6 +6,41 @@
 
 ## Installation
 
+### MacOS
+
+```
+brew tap crimson-crystal/distribution https://github.com/crimson-crystal/distribution
+brew install crimson
+```
+
+### Windows
+
+```
+scoop bucket add crimson https://github.com/crimson-crystal/distribution
+scoop install crimson
+```
+
+### From Release
+
+See the [releases page](https://github.com/crimson-crystal/crimson/releases) for available packaged binaries.
+
+#### Linux
+
+```sh
+curl -L https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-nightly-linux-x86_64.tar.gz -o crimson.tar.gz
+tar -xvf crimson.tar.gz -C /usr/local/bin
+```
+
+#### Windows (PowerShell)
+
+```ps1
+Invoke-WebRequest "https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-nightly-windows-x86_64-msvc.zip" -OutFile crimson.zip
+Expand-Archive .\crimson.zip .
+```
+
+> **Note**
+> Make sure to add the `crimson` executable to a directory in `PATH`.
+
 ### From Source
 
 [Crystal](https://crystal-lang.org) version 1.9.2 or higher is required to build Crimson. Make sure to add the `crimson` binary in `bin/` to a directory in `PATH`.
