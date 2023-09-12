@@ -39,7 +39,7 @@ Versions can be aliased to make using them easier: run `crimson alias <name> <ve
 
 ### Switching
 
-You can switch between Crystal versions using `crimson switch <version>` (or `crimson use`). If the version you wish to switch to has an alias, you can use that instead (for example, `crimson switch dev`). Versions can also be switched to automatically in the install command by including the `-s`/`--switch` flag.
+You can switch between Crystal versions using `crimson switch <version>` (or `crimson use`). If the version you wish to switch to has an alias, you can use that instead (for example, `crimson switch dev`). Versions can also be switched to automatically in the install command by including the `-s`/`--switch` flag. If you want to temporarily remove the current version from your system (for example, if you wanted to revert to a local install of Crystal) you can do so with `crimson switch -d`. This doesn't uninstall the Crystal version entirely, meaning you can easily switch back to it at any time.
 
 ### Defaults
 
