@@ -1,5 +1,15 @@
 <p align="center">
-  <img alt="crimson-logo" src="assets/crimson_banner.png" width="700">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="assets/crimson_banner_light.png"
+    />
+    <img
+      alt="logo"
+      src="assets/crimson_banner_dark.png"
+      width="720px"
+    />
+  </picture>
   <h3 align="center">Crimson</h3>
   <p align="center">Crystal version management made easy</p>
 </p>
