@@ -57,10 +57,14 @@ module Crimson::Commands
 
       results.each do |result|
         stdout << result.version << "  "
-        stdout << result.alias if _alias
+        stdout << result.alias if result.alias?
         if path
           if _alias
-            stdout << " " * (max_alias - result.alias.size)
+            if result.alias?
+              stdout << " " * (max_alias - result.alias.size)
+            else
+              stdout << " " * max_alias
+            end
           end
           stdout << result.path
         end
