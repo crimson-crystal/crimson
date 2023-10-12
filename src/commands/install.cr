@@ -25,7 +25,7 @@ module Crimson::Commands
       version = arguments.get?("version").try &.as_s
       unless version
         verbose { "fetching available versions" }
-        version = ENV.get_available_versions(options.has?("fetch"))[1]
+        version = ENV.get_available_versions(options.has?("fetch"))[0]
       end
 
       if ENV.installed? version

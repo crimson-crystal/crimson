@@ -16,10 +16,10 @@ module Crimson::ENV
       end
     end
 
-    res = Crest.get "https://crystal-lang.org/api/versions.json"
+    res = Crest.get "https://api.github.com/repos/crystal-lang/crystal/releases"
     data = JSON.parse res.body
 
-    @@versions = data["versions"].as_a.map &.["name"].as_s
+    @@versions = data.as_a.map &.["tag_name"].as_s
     File.write LIBRARY / "versions.txt", @@versions.join '\n'
 
     @@versions
