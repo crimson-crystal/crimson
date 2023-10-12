@@ -56,7 +56,7 @@ module Crimson::Commands
       end
 
       results.each do |result|
-        stdout << result.version << "  "
+        result.version.ljust stdout, 8
         stdout << result.alias if result.alias?
         if path
           if _alias
