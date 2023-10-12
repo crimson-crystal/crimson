@@ -28,7 +28,3 @@ targets:
   crimson:
     main: src/main.cr
     flags: --stats
-
-  darwin:
-    main: src/main.cr
-    flags: --cross-compile --target x86_64-darwin
