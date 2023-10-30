@@ -17,7 +17,7 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
 
-      targets = arguments.get("target").as_a
+      targets = arguments.get("targets").as_a
       targets.each do |target|
         if version = config.aliases.delete target
           target = version
