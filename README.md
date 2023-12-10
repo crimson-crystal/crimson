@@ -48,7 +48,7 @@ Invoke-WebRequest "https://github.com/crimson-crystal/crimson/releases/download/
 Expand-Archive .\crimson.zip .
 ```
 
-> **Note**
+> [!IMPORTANT]
 > Make sure to add the `crimson.exe` and `crimson.pdb` files to a directory in `PATH`.
 
 ### From Source
@@ -65,7 +65,7 @@ shards build
 
 To get started, simply run `crimson setup`. This will setup the necessary configuration files and directories for Crimson, update your system to make the `crystal` and `shards` executables available and prompt you to install the necessary build dependencies for Crystal. You can bypass the prompts by including the `-y`/`--yes` flag, or skip dependency installation by including the `-s`/`--skip-dependencies` flag.
 
-> **Note**
+> [!NOTE]
 > Crystal's dependencies are not typically readily available on most systems so you will need to install them manually if you choose to skip them in the command.
 
 Next, install Crystal using `crimson install` (or `crimson in`). By default this will install the latest available version unless you specify one (for example, `crimson install 1.9.2`). You can install any Crystal version that is available on the [Crystal GitHub releases page](https://github.com/crystal-lang/crystal/releases). This unfortunately means that nightly builds cannot be installed via Crimson yet.
