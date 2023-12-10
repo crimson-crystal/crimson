@@ -13,7 +13,7 @@ module Crimson::Commands
       config = Config.load rescue Config.new nil, nil
 
       stdout << "Library:    " << ENV::LIBRARY << '\n'
-      stdout << "Identifier: " << ENV::TARGET_IDENTIFIER << '\n'
+      stdout << "Identifier: " << ENV::TARGET_IDENTIFIER.split('.', 2)[0] << '\n'
 
       stdout << "Current:    "
       if current = config.current
