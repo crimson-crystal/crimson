@@ -82,7 +82,12 @@ module Crimson::Commands
       end
 
       puts "Unpacking archive to destination..."
-      ENV.decompress path, archive.path
+      begin
+        ENV.decompress path, archive.path
+      rescue ex
+        FileUtils.rm_rf path
+        on_error ex
+      end
 
       {% unless flag?(:win32) %}
         puts "Ensuring file permissions"
