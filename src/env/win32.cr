@@ -16,16 +16,24 @@ module Crimson::ENV
 
   HOST_BITS = {{ flag?(:aarch64) ? "ARM64" : flag?(:bits64) ? "x64" : "x86" }}
 
-  def self.decompress(root : Path, path : String) : Nil
+  def self.decompress(root : Path, path : String, debug : Bool) : Nil
+    if debug
+      decompress_debug root, path
+    else
+      decompress root, path
+    end
+  end
+
+  private def self.decompress(root : Path, path : String) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
     count = size = 0i32
 
     Compress::Zip::Reader.open path do |zip|
       zip.each_entry do |entry|
         dest = root / entry.filename
-        if entry.dir?
-          Dir.mkdir_p dest
-          next
+
+        unless Dir.exists? base = File.dirname dest
+          Dir.mkdir_p base
         end
 
         File.open dest, mode: "w" do |file|
@@ -39,6 +47,35 @@ module Crimson::ENV
     end
 
     STDERR << "\e[?25h\e[2K"
+    puts "#{count} files unpacked (#{size.humanize_bytes})"
+  end
+
+  private def self.decompress_debug(root : Path, path : String) : Nil
+    STDERR << "\e[?25l0 files unpacked\r"
+    count = size = 0i32
+
+    Compress::Zip::Reader.open path do |zip|
+      STDERR << "\e[2K\n"
+
+      zip.each_entry do |entry|
+        dest = root / entry.filename
+        STDERR << "\e[F" << dest << "\n\n"
+
+        unless Dir.exists? base = File.dirname dest
+          Dir.mkdir_p base
+        end
+
+        File.open dest, mode: "w" do |file|
+          IO.copy entry.io, file
+          count += 1
+          size += entry.compressed_size
+        end
+
+        STDERR << "\e[2K" << count << " files unpacked (" << size.humanize_bytes << ')'
+      end
+    end
+
+    STDERR << "\e[F\e[?25h\e[2K"
     puts "#{count} files unpacked (#{size.humanize_bytes})"
   end
 

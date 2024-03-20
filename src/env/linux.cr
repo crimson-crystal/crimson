@@ -12,7 +12,7 @@ module Crimson::ENV
   TARGET_BIN_CRYSTAL = "/usr/local/bin/crystal"
   TARGET_BIN_SHARDS  = "/usr/local/bin/shards"
 
-  def self.decompress(root : Path, path : String) : Nil
+  def self.decompress(root : Path, path : String, __) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
     count = size = 0i32
 

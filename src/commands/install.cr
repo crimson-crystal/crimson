@@ -17,6 +17,7 @@ module Crimson::Commands
       add_option 'd', "default", description: "set the version as default"
       add_option 'f', "fetch", description: "fetch versions from the api"
       add_option 's', "switch", description: "switch the available version on the system"
+      add_option "debug"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
@@ -77,13 +78,13 @@ module Crimson::Commands
 
       at_exit do
         archive.close unless archive.closed?
-        archive.delete
+        archive.delete rescue nil
         STDERR << "\e[?25h"
       end
 
       puts "Unpacking archive to destination..."
       begin
-        ENV.decompress path, archive.path
+        ENV.decompress path, archive.path, options.has? "debug"
       rescue ex
         FileUtils.rm_rf path
         on_error ex
