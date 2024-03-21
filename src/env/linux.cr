@@ -12,7 +12,15 @@ module Crimson::ENV
   TARGET_BIN_CRYSTAL = "/usr/local/bin/crystal"
   TARGET_BIN_SHARDS  = "/usr/local/bin/shards"
 
-  def self.decompress(root : Path, path : String, __) : Nil
+  def self.decompress(root : Path, path : String, debug : Bool) : Nil
+    if debug
+      decompress_debug root, path
+    else
+      decompress root, path
+    end
+  end
+
+  private def self.decompress(root : Path, path : String) : Nil
     STDERR << "\e[?25l0 files unpacked\r"
     count = size = 0i32
 
@@ -37,6 +45,38 @@ module Crimson::ENV
     end
 
     STDERR << "\e[?25h\e[2K"
+    puts "#{count} files unpacked (#{size.humanize_bytes})"
+  end
+
+  private def self.decompress_debug(root : Path, path : String) : Nil
+    STDERR << "\e[?25l0 files unpacked\r"
+    count = size = 0i32
+
+    Compress::Gzip::Reader.open path do |gzip|
+      Crystar::Reader.open gzip do |tar|
+        STDERR << "\e[2K\n"
+
+        tar.each_entry do |entry|
+          dest = root / Path[entry.name].parts[1..].join File::SEPARATOR
+          STDERR << "\e[F" << dest << "\n\n"
+
+          if entry.flag == 53 # check directories
+            Dir.mkdir_p dest
+            next
+          end
+
+          File.open dest, mode: "w" do |file|
+            IO.copy entry.io, file
+            count += 1
+            size += entry.size
+          end
+
+          STDERR << "\e[2K" << count << " files unpacked (" << size.humanize_bytes << ')'
+        end
+      end
+    end
+
+    STDERR << "\e[2K\r\e[?25h"
     puts "#{count} files unpacked (#{size.humanize_bytes})"
   end
 
