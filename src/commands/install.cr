@@ -65,21 +65,23 @@ module Crimson::Commands
       archive = File.open path / "crystal-#{version}-#{ENV::TARGET_IDENTIFIER}", mode: "w"
       verbose { "location: #{archive.path}" }
 
+      installed = false
       source = "https://github.com/crystal-lang/crystal/releases/download/" \
                "#{version}/crystal-#{version}-#{ENV::TARGET_IDENTIFIER}"
 
       puts "Downloading sources..."
       verbose { source }
 
-      Crest.get source do |res|
-        IO.copy res.body_io, archive
-        archive.close
-      end
-
       at_exit do
         archive.close unless archive.closed?
         archive.delete rescue nil
+        FileUtils.rm_rf path unless installed
         STDERR << "\e[?25h"
+      end
+
+      Crest.get source do |res|
+        IO.copy res.body_io, archive
+        archive.close
       end
 
       puts "Unpacking archive to destination..."
@@ -103,6 +105,8 @@ module Crimson::Commands
         File.chmod path / "bin" / "crystal", 0o755
         File.chmod path / "bin" / "shards", 0o755
       {% end %}
+
+      installed = true
 
       if value = options.get?("alias").try &.as_s
         puts "Setting version alias"
