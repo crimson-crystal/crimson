@@ -100,11 +100,15 @@ module Crimson::ENV
     Dir.mkdir_p TARGET_BIN
 
     if setup_crystal_path?
+      File.delete? TARGET_BIN_CRYSTAL
       File.symlink LIBRARY_BIN / "crystal.exe", TARGET_BIN_CRYSTAL
+
+      File.delete? TARGET_BIN / "crystal.pdb"
       File.symlink LIBRARY_BIN / "crystal.pdb", TARGET_BIN / "crystal.pdb"
     end
 
     if setup_shards_path?
+      File.delete? TARGET_BIN_SHARDS
       File.symlink LIBRARY_BIN / "shards.exe", TARGET_BIN_SHARDS
     end
 
