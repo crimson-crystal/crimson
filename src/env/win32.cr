@@ -94,6 +94,14 @@ module Crimson::ENV
       File.delete LIBRARY_BIN / "shards.exe"
     end
     File.symlink path / "shards.exe", LIBRARY_BIN / "shards.exe"
+
+    Dir.glob(TARGET_BIN / "*.dll").each do |dll|
+      File.delete dll
+    end
+
+    Dir.glob(path / "*.dll").each do |dll|
+      File.symlink dll, TARGET_BIN / Path[dll].basename
+    end
   end
 
   def self.setup_executable_paths : Nil
