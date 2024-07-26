@@ -32,8 +32,11 @@ module Crimson::ENV
       zip.each_entry do |entry|
         dest = root / entry.filename
 
-        unless Dir.exists? base = File.dirname dest
-          Dir.mkdir_p base
+        if entry.dir?
+          Dir.mkdir_p dest
+          next
+        else
+          Dir.mkdir_p File.dirname dest
         end
 
         File.open dest, mode: "w" do |file|
@@ -61,8 +64,11 @@ module Crimson::ENV
         dest = root / entry.filename
         STDERR << "\e[F" << dest << "\n\n"
 
-        unless Dir.exists? base = File.dirname dest
-          Dir.mkdir_p base
+        if entry.dir?
+          Dir.mkdir_p dest
+          next
+        else
+          Dir.mkdir_p File.dirname dest
         end
 
         File.open dest, mode: "w" do |file|
