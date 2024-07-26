@@ -48,6 +48,21 @@ module Crimson::Commands
         end
       {% end %}
 
+      installed = false
+      path = uninitialized Path
+      archive = uninitialized File
+
+      Process.on_interrupt do
+        if archive
+          archive.close rescue nil
+          archive.delete rescue nil
+        end
+
+        FileUtils.rm_rf path if path && !installed
+        STDERR << "\e[?25h"
+        exit 1
+      end
+
       path = ENV::LIBRARY_CRYSTAL / version
       puts "Installing Crystal version: #{version}"
       verbose { "ensuring directory: #{path}" }
@@ -65,19 +80,11 @@ module Crimson::Commands
       archive = File.open path / "crystal-#{version}-#{ENV::TARGET_IDENTIFIER}", mode: "w"
       verbose { "location: #{archive.path}" }
 
-      installed = false
       source = "https://github.com/crystal-lang/crystal/releases/download/" \
                "#{version}/crystal-#{version}-#{ENV::TARGET_IDENTIFIER}"
 
       puts "Downloading sources..."
       verbose { source }
-
-      at_exit do
-        archive.close unless archive.closed?
-        archive.delete rescue nil
-        FileUtils.rm_rf path unless installed
-        STDERR << "\e[?25h"
-      end
 
       Crest.get source do |res|
         IO.copy res.body_io, archive
