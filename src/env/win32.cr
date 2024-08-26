@@ -28,8 +28,8 @@ module Crimson::ENV
     STDERR << "\e[?25l0 files unpacked\r"
     count = size = 0i32
 
-    Compress::Zip::Reader.open path do |zip|
-      zip.each_entry do |entry|
+    Compress::Zip::File.open path do |zip|
+      zip.entries.each do |entry|
         dest = root / entry.filename
 
         if entry.dir?
@@ -40,7 +40,10 @@ module Crimson::ENV
         end
 
         File.open dest, mode: "w" do |file|
-          IO.copy entry.io, file
+          entry.open do |io|
+            IO.copy io, file
+          end
+
           count += 1
           size += entry.compressed_size
         end
@@ -57,10 +60,10 @@ module Crimson::ENV
     STDERR << "\e[?25l0 files unpacked\r"
     count = size = 0i32
 
-    Compress::Zip::Reader.open path do |zip|
+    Compress::Zip::File.open path do |zip|
       STDERR << "\e[2K\n"
 
-      zip.each_entry do |entry|
+      zip.entries.each do |entry|
         dest = root / entry.filename
         STDERR << "\e[F" << dest << "\n\n"
 
@@ -72,7 +75,10 @@ module Crimson::ENV
         end
 
         File.open dest, mode: "w" do |file|
-          IO.copy entry.io, file
+          entry.open do |io|
+            IO.copy io, file
+          end
+
           count += 1
           size += entry.compressed_size
         end
