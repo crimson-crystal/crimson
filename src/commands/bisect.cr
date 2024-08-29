@@ -1,5 +1,3 @@
-require "wait_group"
-
 module Crimson::Commands
   class Bisect < Base
     def setup : Nil
@@ -13,6 +11,16 @@ module Crimson::Commands
       add_option "from", type: :single
       add_option 'o', "order", type: :single
       add_option "to", type: :single
+    end
+
+    def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      if order = options.get?("order").try &.as_s.downcase
+        unless order.in?("asc", "ascending", "desc", "descending", "rand", "random")
+          error "Invalid order value"
+          error "See 'crimson bisect --help' for more information"
+          system_exit
+        end
+      end
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
@@ -31,72 +39,51 @@ module Crimson::Commands
         versions.select! { |v| SemanticVersion.parse(v) <= to }
       end
 
-      args = arguments.get("args").as_a
+      if order = options.get?("order").try &.as_s.downcase
+        case order
+        when "desc", "descending"
+          versions.reverse!
+        when "rand", "random"
+          versions.shuffle!
+        end
+      end
 
-      if options.has? "fail-first"
-        handle_fail_first versions, args.shift, args
-      else
-        handle_grouped versions, args.shift, args
+      args = arguments.get("args").as_a
+      fail_first = options.has? "fail-first"
+      command = args.shift
+      results = {} of String => String?
+      count = 1
+      max = versions.size
+
+      STDERR << "\e[?25l"
+      versions.each do |version|
+        ENV.switch ENV::LIBRARY_CRYSTAL / version
+        STDERR << "Testing " << version << " (" << count << '/' << max << ")\r"
+
+        proc = Process.run(command, args, error: err = IO::Memory.new)
+        results[version] = proc.success? ? nil : err.to_s
+        break if fail_first && !proc.success?
+        count += 1
+      end
+
+      STDERR << "\e[F\e[?25h\e[2K"
+
+      results.each do |(version, result)|
+        STDOUT << version << " • "
+        if result
+          STDOUT << "Failed\n".colorize.red
+          result.lines.each do |line|
+            STDOUT << "┃ ".colorize.dark_gray << line << '\n'
+          end
+          STDOUT << '\n'
+        else
+          STDOUT << "Passed\n".colorize.green
+        end
       end
     ensure
       if initial
         ENV.switch ENV::LIBRARY_CRYSTAL / initial
       end
-    end
-
-    private def handle_grouped(versions : Array(String), command : String, args : Array(String)) : Nil
-      p! command, args
-      wg = WaitGroup.new(max = versions.size)
-      result = Channel({String, String?}).new
-
-      versions.each do |version|
-        spawn do
-          ENV.switch ENV::LIBRARY_CRYSTAL / version
-          err = IO::Memory.new
-          res = Process.run command, args, error: err
-
-          if res.success?
-            result.send({version, nil})
-          else
-            result.send({version, err.to_s})
-          end
-
-          wg.done
-        end
-      end
-
-      spawn do
-        while info = result.receive?
-          puts info
-        end
-
-        wg.done
-      end
-
-      wg.wait
-    end
-
-    private def handle_fail_first(versions : Array(String), command : String, args : Array(String)) : Nil
-      result = {} of String => Bool
-      count = 1
-      max = versions.size
-      iter = versions.each
-
-      STDERR << "\e[?25l"
-      loop do
-        version = iter.next
-        break if version.is_a? Iterator::Stop
-
-        ENV.switch ENV::LIBRARY_CRYSTAL / version
-        STDERR << version << " (" << count << '/' << max << ")\r"
-
-        proc = Process.run command, args
-        result[version] = proc.success?
-        break unless proc.success?
-      end
-
-      STDERR << "\e[F\e[?25h\e[2K"
-      pp result
     end
   end
 end
