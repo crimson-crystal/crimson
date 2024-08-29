@@ -66,7 +66,7 @@ module Crimson::Commands
         count += 1
       end
 
-      STDERR << "\e[F\e[?25h\e[2K"
+      STDERR << "\e[?25h\e[2K\r"
 
       results.each do |(version, result)|
         STDOUT << version << " • "
