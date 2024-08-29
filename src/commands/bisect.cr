@@ -72,7 +72,7 @@ module Crimson::Commands
         STDOUT << version << " • "
         if result
           STDOUT << "Failed\n".colorize.red
-          result.lines.each do |line|
+          result.each_line do |line|
             STDOUT << "┃ ".colorize.dark_gray << line << '\n'
           end
           STDOUT << '\n'
