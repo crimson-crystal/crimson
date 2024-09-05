@@ -163,7 +163,7 @@ module Crimson::ENV
   def self.install_dependencies(prompt : Bool) : Nil
     if msvc = Crystal::System::VisualStudio.find_latest_msvc_path
       cl = msvc / "bin" / "Host#{HOST_BITS}" / HOST_BITS / "cl.exe"
-      return if File.executable? cl
+      return if File::Info.executable? cl
     end
 
     if prompt

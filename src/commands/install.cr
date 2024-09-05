@@ -49,7 +49,7 @@ module Crimson::Commands
       path = uninitialized Path
       archive = uninitialized File
 
-      Process.on_interrupt do
+      Process.on_terminate do |_|
         if archive
           archive.close rescue nil
           archive.delete rescue nil

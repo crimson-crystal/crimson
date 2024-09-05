@@ -4,7 +4,7 @@ authors:
   - Devonte W <https://github.com/devnote-dev>
 
 version: 0.1.0
-crystal: '>= 1.9.2'
+crystal: '>= 1.13.0'
 license: MPL
 repository: https://github.com/crimson-crystal/crimson
 
