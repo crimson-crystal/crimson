@@ -28,10 +28,7 @@ module Crimson::Commands
           target = version
         end
 
-        unless ENV.installed? target
-          error "Crystal version #{target} is not installed"
-          system_exit
-        end
+        fatal "Crystal version #{target} is not installed" unless ENV.installed? target
 
         config.default = target
         config.save

@@ -14,16 +14,13 @@ module Crimson::Commands
       Commands.generate_template self
     end
 
-    def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
+    def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       Colorize.enabled = false if options.has? "no-color"
       @verbose = true if options.has? "verbose"
 
       if options.has? "help"
         puts help_template
-
-        false
-      else
-        true
+        exit_program 0
       end
     end
 
@@ -35,8 +32,6 @@ module Crimson::Commands
         error ex.to_s
         command = "crimson #{self.name} --help".colorize.bold
         error "See '#{command}' for more information"
-      when SystemExit
-        # skip
       else
         error "Unexpected exception:"
         error ex.to_s
@@ -49,21 +44,21 @@ module Crimson::Commands
         end
       end
 
-      exit 1
+      exit_program
     end
 
     def on_missing_arguments(args : Array(String))
       error "Missing required argument#{"s" if args.size > 1}: #{args.join(", ")}"
       command = "crimson #{self.name} --help".colorize.bold
       error "See '#{command}' for more information"
-      exit 1
+      exit_program
     end
 
     def on_unknown_arguments(args : Array(String))
       error "Unexpected argument#{"s" if args.size > 1}: #{args.join(", ")}"
       command = "crimson #{self.name} --help".colorize.bold
       error "See '#{command}' for more information"
-      exit 1
+      exit_program
     end
 
     def on_invalid_option(message : String)
@@ -76,16 +71,17 @@ module Crimson::Commands
       error "Unexpected option#{"s" if options.size > 1}: #{options.join(", ")}"
       command = "crimson #{self.name} --help".colorize.bold
       error "See '#{command}' for more information"
-      exit 1
-    end
-
-    def system_exit : NoReturn
-      raise SystemExit.new
+      exit_program
     end
 
     protected def verbose(& : ->) : Nil
       return unless @verbose
       STDOUT << yield << '\n'
+    end
+
+    def fatal(data : _) : NoReturn
+      error data
+      exit_program
     end
   end
 end

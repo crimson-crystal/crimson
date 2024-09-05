@@ -72,11 +72,10 @@ module Crimson::Commands
       end
     rescue File::NotFoundError
       error "Crimson config not found"
-      error "Run '#{"crimson setup".colorize.bold}' to create"
+      fatal "Run '#{"crimson setup".colorize.bold}' to create"
     rescue INI::ParseException
       error "Cannot parse Crimson config"
-      error "Run '#{"crimson setup".colorize.bold}' to restore"
-      system_exit
+      fatal "Run '#{"crimson setup".colorize.bold}' to restore"
     end
   end
 end

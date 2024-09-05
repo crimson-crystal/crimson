@@ -42,17 +42,12 @@ module Crimson::Commands
           config.save
           return
         else
-          error "No alias named '#{name}'"
-          system_exit
+          fatal "No alias named '#{name}'"
         end
       end
 
       on_missing_arguments %w[version] unless version
-
-      unless ENV.installed? version
-        error "Crystal version #{version} is not installed"
-        system_exit
-      end
+      fatal "Crystal version #{version} is not installed" unless ENV.installed? version
 
       if current = config.aliases[name]?
         warn "This will remove the alias from version #{current}"

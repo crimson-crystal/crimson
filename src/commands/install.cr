@@ -32,19 +32,16 @@ module Crimson::Commands
       if ENV.installed? version
         error "Crystal version #{version} is already installed"
         command = "crimson switch #{version}".colorize.bold
-        error "To use it run '#{command}'"
-        system_exit
+        fatal "To use it run '#{command}'"
       end
 
       unless ENV.get_available_versions(false).includes? version
-        error "Unknown Crystal version: #{version}"
-        system_exit
+        fatal "Unknown Crystal version: #{version}"
       end
 
       {% if flag?(:win32) %}
         if SemanticVersion.parse(version) < ENV::MIN_VERSION
-          error "Crystal is not available on Windows for versions below #{ENV::MIN_VERSION}"
-          system_exit
+          fatal "Crystal is not available on Windows for versions below #{ENV::MIN_VERSION}"
         end
       {% end %}
 
@@ -73,7 +70,7 @@ module Crimson::Commands
         error "Failed to create directory:"
         error "Location: #{path}"
         error ex.to_s
-        system_exit
+        exit_program
       end
 
       verbose { "creating destination file" }

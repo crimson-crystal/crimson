@@ -30,10 +30,7 @@ module Crimson::Commands
 
         target = arguments.get("target").as_s
         if target == "."
-          unless default = config.default
-            error "No default version set"
-            system_exit
-          end
+          fatal "No default version set" unless default = config.default
 
           ENV.switch ENV::LIBRARY_CRYSTAL / default
           config.default = config.current
@@ -46,10 +43,7 @@ module Crimson::Commands
           target = version
         end
 
-        unless ENV.installed? target
-          error "Crystal version #{target} is not installed"
-          system_exit
-        end
+        fatal "Crystal version #{target} is not installed" unless ENV.installed? target
 
         ENV.switch ENV::LIBRARY_CRYSTAL / target
         config.current = target

@@ -17,8 +17,7 @@ module Crimson::Commands
       if order = options.get?("order").try &.as_s.downcase
         unless order.in?("asc", "ascending", "desc", "descending", "rand", "random")
           error "Invalid order value"
-          error "See 'crimson bisect --help' for more information"
-          system_exit
+          fatal "See 'crimson bisect --help' for more information"
         end
       end
     end
@@ -27,7 +26,7 @@ module Crimson::Commands
       config = Config.load
       initial = config.current || config.default
       versions = ENV.get_installed_versions.sort_by { |v| SemanticVersion.parse(v) }
-      system_exit if versions.empty?
+      exit_program if versions.empty?
 
       if from = options.get?("from").try &.as_s
         from = SemanticVersion.parse from
