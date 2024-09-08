@@ -9,7 +9,7 @@ module Crimson::Commands
         alias will set that as the available version on the system (meaning it will
         switch the Crystal and Shards executables). Specifying a period "." will swap
         the current version with the default version then switch to it. Specifying the
-        '--delete' flag will make the current version unavilable on the system.
+        '--delete' flag will make the current version unavailable on the system.
         DESC
 
       add_alias "use"
