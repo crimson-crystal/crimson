@@ -28,7 +28,7 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
       initial = config.current || config.default
-      versions = ENV.get_installed_versions
+      versions = ENV.get_installed_versions.reverse!
       exit_program if versions.empty?
 
       if from = options.get?("from").try &.as_s
@@ -43,7 +43,7 @@ module Crimson::Commands
 
       if order = options.get?("order").try &.as_s.downcase
         case order
-        when "desc", "descending"
+        when "asc", "ascending"
           versions.reverse!
         when "rand", "random"
           versions.shuffle!
@@ -65,7 +65,6 @@ module Crimson::Commands
         STDERR << "Testing " << version << " (" << count << '/' << max << ")\r"
 
         proc = Process.run(command, args, error: err = IO::Memory.new)
-        results[version] = proc.success? ? nil : err.to_s
         STDERR << "\e[2K\r"
 
         if fail_first && !proc.success?
@@ -88,6 +87,7 @@ module Crimson::Commands
         end
       end
     ensure
+      STDERR << "\e[?25h"
       if initial
         ENV.switch ENV::LIBRARY_CRYSTAL / initial
       end
