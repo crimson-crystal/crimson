@@ -8,12 +8,15 @@ module Crimson::Commands
 
       add_argument "args", multiple: true, required: true
       add_option 'F', "fail-first"
-      add_option "from", type: :single
       add_option 'o', "order", type: :single
+      add_option "from", type: :single
       add_option "to", type: :single
+      add_option 'p', "progress"
     end
 
     def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      super
+
       if order = options.get?("order").try &.as_s.downcase
         unless order.in?("asc", "ascending", "desc", "descending", "rand", "random")
           error "Invalid order value"
@@ -49,6 +52,7 @@ module Crimson::Commands
 
       args = arguments.get("args").as_a
       fail_first = options.has? "fail-first"
+      progress = options.has? "progress"
       command = args.shift
       results = {} of String => String?
       count = 1
@@ -61,27 +65,43 @@ module Crimson::Commands
 
         proc = Process.run(command, args, error: err = IO::Memory.new)
         results[version] = proc.success? ? nil : err.to_s
-        break if fail_first && !proc.success?
+        STDERR << "\e[2K\r"
+
+        if fail_first && !proc.success?
+          print version, err.to_s
+          return
+        end
+
+        if progress
+          print(version, proc.success? ? nil : err.to_s)
+        else
+          results[version] = proc.success? ? nil : err.to_s
+        end
+
         count += 1
       end
 
-      STDERR << "\e[?25h\e[2K\r"
-
-      results.each do |(version, result)|
-        STDOUT << version << " • "
-        if result
-          STDOUT << "Failed\n".colorize.red
-          result.each_line do |line|
-            STDOUT << "┃ ".colorize.dark_gray << line << '\n'
-          end
-          STDOUT << '\n'
-        else
-          STDOUT << "Passed\n".colorize.green
+      unless progress
+        results.each do |(version, result)|
+          print version, result
         end
       end
     ensure
       if initial
         ENV.switch ENV::LIBRARY_CRYSTAL / initial
+      end
+    end
+
+    private def print(version : String, result : String?) : Nil
+      STDOUT << version << " • "
+      if result
+        STDOUT << "Failed\n".colorize.red
+        result.each_line do |line|
+          STDOUT << "┃ ".colorize.dark_gray << line << '\n'
+        end
+        STDOUT << '\n'
+      else
+        STDOUT << "Passed\n".colorize.green
       end
     end
   end
