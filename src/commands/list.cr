@@ -22,7 +22,7 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-      installed = ENV.get_installed_versions.sort_by { |v| SemanticVersion.parse(v) }.reverse!
+      installed = ENV.get_installed_versions.reverse!
       return if installed.empty?
 
       unless options.has?("alias") || options.has?("path")
@@ -34,7 +34,7 @@ module Crimson::Commands
       _alias = options.has? "alias"
       max_alias = 0
       path = options.has? "path"
-      results = installed.map { |version| Result.new version }
+      results = installed.map { |version| Result.new version.to_s }
 
       if _alias && !config.aliases.empty?
         aliases = config.aliases.invert

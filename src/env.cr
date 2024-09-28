@@ -25,10 +25,10 @@ module Crimson::ENV
     @@versions
   end
 
-  def self.get_installed_versions : Array(String)
+  def self.get_installed_versions : Array(SemanticVersion)
     Dir.children(LIBRARY_CRYSTAL).select do |child|
       File.directory? LIBRARY_CRYSTAL / child
-    end
+    end.map { |v| SemanticVersion.parse(v) }.sort!
   end
 
   {% for name in %w[CRYSTAL SHARDS] %}

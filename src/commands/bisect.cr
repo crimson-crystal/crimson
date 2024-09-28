@@ -28,17 +28,17 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
       initial = config.current || config.default
-      versions = ENV.get_installed_versions.sort_by { |v| SemanticVersion.parse(v) }
+      versions = ENV.get_installed_versions
       exit_program if versions.empty?
 
       if from = options.get?("from").try &.as_s
         from = SemanticVersion.parse from
-        versions.reject! { |v| SemanticVersion.parse(v) < from }
+        versions.reject! { |v| v < from }
       end
 
       if to = options.get?("to").try &.as_s
         to = SemanticVersion.parse to
-        versions.select! { |v| SemanticVersion.parse(v) <= to }
+        versions.select! { |v| v <= to }
       end
 
       if order = options.get?("order").try &.as_s.downcase
@@ -60,6 +60,7 @@ module Crimson::Commands
 
       STDERR << "\e[?25l"
       versions.each do |version|
+        version = version.to_s
         ENV.switch ENV::LIBRARY_CRYSTAL / version
         STDERR << "Testing " << version << " (" << count << '/' << max << ")\r"
 
