@@ -29,6 +29,7 @@ module Crimson
       add_command Commands::Setup.new
       add_command Commands::Env.new
       add_command Commands::Install.new
+      add_command Commands::Import.new
       add_command Commands::List.new
       add_command Commands::Bisect.new
       add_command Commands::Default.new
