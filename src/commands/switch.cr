@@ -19,7 +19,7 @@ module Crimson::Commands
       add_usage "switch --delete"
 
       add_argument "target", description: "the version or version alias to switch to"
-      add_option 'd', "delete", description: "remove this as"
+      add_option 'd', "delete", description: "remove the version as current"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

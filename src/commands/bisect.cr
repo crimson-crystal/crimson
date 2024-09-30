@@ -22,7 +22,7 @@ module Crimson::Commands
 
       add_alias "bi"
       add_usage "bisect [-F|--fail-first] [-o|--order <asc|desc|random>] [--from <version>]" \
-                "\n\t[--to <version>] [-p|--progress] <args>"
+                "\n\t[--to <version>] [-p|--progress] <args...>"
 
       add_argument "args", description: "the command to test", multiple: true, required: true
       add_option 'F', "fail-first", description: "exit early at the first failed test"

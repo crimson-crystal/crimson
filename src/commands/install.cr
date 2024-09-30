@@ -10,7 +10,7 @@ module Crimson::Commands
         DESC
 
       add_alias "in"
-      add_usage "install [-a|--alias <name>] [-f|--fetch] [-s|--switch] [version]"
+      add_usage "install [-a|--alias <name>] [-d|--default] [-f|--fetch] [-s|--switch] [version]"
 
       add_argument "version", description: "the version to install"
       add_option 'a', "alias", description: "set the alias of the version", type: :single

@@ -20,6 +20,8 @@ module Crimson::Commands
                         DESC
                      {% end %}
 
+      add_usage "setup [-s|--skip-dependencies] [-y|--yes]"
+
       add_option 's', "skip-dependencies", description: "skip installing external dependencies"
       add_option 'y', "yes", description: "allow all permission prompts"
     end
