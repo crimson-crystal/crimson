@@ -67,7 +67,7 @@ module Crimson::Commands
               File.symlink dll, dest / Path[dll].basename
             end
           {% else %}
-            File.symlink path / "bin" / "crystal"
+            File.symlink path / "bin" / "crystal", dest / "crystal"
           {% end %}
 
           File.touch path / "LINK", Time.utc
