@@ -2,7 +2,7 @@ name: Nightly
 
 on:
   schedule:
-    - cron: 0 0 * * *
+    - cron: 0 6 * * 6
 
 permissions:
   actions: write
@@ -18,7 +18,7 @@ jobs:
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
         with:
-          crystal: latest
+          crystal: nightly
 
       - name: Install Dependencies
         run: shards install --production
@@ -46,7 +46,7 @@ jobs:
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
         with:
-          crystal: latest
+          crystal: nightly
 
       - name: Install Dependencies
         run: shards install --production

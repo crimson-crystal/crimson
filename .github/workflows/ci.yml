@@ -24,6 +24,9 @@ jobs:
         with:
           crystal: latest
 
+      - name: Install Dependencies
+        run: shards install --production
+
       - name: Install Ameba
         uses: crystal-ameba/github-action@v0.8.0
         env:
@@ -31,3 +34,6 @@ jobs:
 
       - name: Check Format
         run: crystal tool format --check
+
+      - name: Check Unreachable
+        run: crystal tool unreachable src/main.cr --check
