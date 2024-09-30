@@ -1,7 +1,7 @@
 name: crimson
 description: A Crystal Version Manager
 authors:
-  - Devonte W <https://github.com/devnote-dev>
+  - Devaune Whittle <https://github.com/devnote-dev>
 
 version: 0.1.0
 crystal: '>= 1.13.0'
@@ -18,10 +18,6 @@ dependencies:
 
   crystar:
     github: naqvis/crystar
-
-development_dependencies:
-  ameba:
-    github: crystal-ameba/ameba
 
 targets:
   crimson:
