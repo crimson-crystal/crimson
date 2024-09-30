@@ -36,6 +36,7 @@ module Crimson
       add_command Commands::Alias.new
       add_command Commands::Switch.new
       add_command Commands::Remove.new
+      add_command Commands::Help.new
       add_command Commands::Version.new
     end
 
