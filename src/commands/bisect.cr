@@ -2,16 +2,34 @@ module Crimson::Commands
   class Bisect < Base
     def setup : Nil
       @name = "bisect"
+      @summary = "test installed Crystal versions"
+      @description = <<-DESC
+        Tests a given command over a set of specified versions. By default this command
+        will test all installed versions from the latest descending, but you can change
+        this by specifying the '--order' flag which accepts asc(ending), desc(ending)
+        and rand(om).
+
+        If you only want to test a subset of versions then you can specify the '--from'
+        flag with a version to start from and/or the '--to' flag with a version to stop
+        at.
+
+        The command will complete when all selected versions are tested, but this can be
+        changed to stop at the first failure by specifying the '--fail-first' flag. The
+        output from each version will be printed after all selected versions are tested
+        unless the '--progress' flag is specified, in which case the output is printed
+        after each version has been tested.
+        DESC
 
       add_alias "bi"
-      add_usage "bisect [-F|--fail-first] [--from <version>] [-o|--order <asc|desc|random>] [--to <version>] <args>"
+      add_usage "bisect [-F|--fail-first] [-o|--order <asc|desc|random>] [--from <version>]" \
+                "\n\t[--to <version>] [-p|--progress] <args>"
 
-      add_argument "args", multiple: true, required: true
-      add_option 'F', "fail-first"
-      add_option 'o', "order", type: :single
-      add_option "from", type: :single
-      add_option "to", type: :single
-      add_option 'p', "progress"
+      add_argument "args", description: "the command to test", multiple: true, required: true
+      add_option 'F', "fail-first", description: "exit early at the first failed test"
+      add_option 'o', "order", description: "the order to execute versions in", type: :single
+      add_option "from", description: "the version to start testing from", type: :single
+      add_option "to", description: "the version to stop testing at", type: :single
+      add_option 'p', "progress", description: "print output after each test"
     end
 
     def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil

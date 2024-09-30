@@ -2,13 +2,33 @@ module Crimson::Commands
   class Import < Base
     def setup : Nil
       @name = "import"
+      @summary = "import a local Crystal compiler"
+      @description = <<-DESC
+        Imports a local Crystal compiler from the file system at a given directory path.
 
-      add_argument "path", required: true
-      add_option 'a', "alias", type: :single
-      add_option 'd', "default"
-      add_option "link"
-      add_option 's', "switch"
-      add_option 'R', "rename", type: :single
+        Note that this command DOES NOT build the compiler at the given path, you should
+        compile Crystal before importing with Crimson. The 'bin', 'lib' and 'src'
+        directories are expected to be available in order to import the compiler.
+
+        The install version is obtained from the compiler during the import process.
+        Crimson will not import a compiler with a conflicting installed version. To
+        get around this you can specify the '--rename' flag with a version name to be
+        imported under.
+
+        By default all source files are copied from the directory path to the
+        destination path, but they can also be symlinked by specifying the '--link'
+        flag.
+        DESC
+
+      add_usage "import [-a|--alias <name>] [-d|--default] [--link] [-s|--switch]" \
+                "\n\t[-R|--rename <version>] <path>"
+
+      add_argument "path", description: "the path to the compiler", required: true
+      add_option 'a', "alias", description: "set the alias of the version", type: :single
+      add_option 'd', "default", description: "set the version as default"
+      add_option "link", description: "link source files to destination"
+      add_option 's', "switch", description: "switch the available version on the system"
+      add_option 'R', "rename", description: "set an alternative version name", type: :single
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
