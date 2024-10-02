@@ -2,7 +2,7 @@ module Crimson::Commands
   class Install < Base
     def setup : Nil
       @name = "install"
-      @summary = "install a version of crystal"
+      @summary = "install a version of Crystal"
       @description = <<-DESC
         Installs a version of Crystal. If no version is specified, the latest available
         version is selected. Available versions are cached on your system but can be

@@ -1,7 +1,7 @@
 module Crimson::Commands
-  class Bisect < Base
+  class Test < Base
     def setup : Nil
-      @name = "bisect"
+      @name = "test"
       @summary = "test installed Crystal versions"
       @description = <<-DESC
         Tests a given command over a set of specified versions. By default this command
@@ -20,8 +20,7 @@ module Crimson::Commands
         after each version has been tested.
         DESC
 
-      add_alias "bi"
-      add_usage "bisect [-F|--fail-first] [-o|--order <asc|desc|random>] [--from <version>]" \
+      add_usage "test [-F|--fail-first] [-o|--order <asc|desc|random>] [--from <version>]" \
                 "\n\t[--to <version>] [-p|--progress] <args...>"
 
       add_argument "args", description: "the command to test", multiple: true, required: true
@@ -38,7 +37,7 @@ module Crimson::Commands
       if order = options.get?("order").try &.as_s.downcase
         unless order.in?("asc", "ascending", "desc", "descending", "rand", "random")
           error "Invalid order value"
-          fatal "See 'crimson bisect --help' for more information"
+          fatal "See 'crimson test --help' for more information"
         end
       end
     end
