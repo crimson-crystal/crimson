@@ -19,6 +19,9 @@ dependencies:
   crystar:
     github: naqvis/crystar
 
+scripts:
+  debug: crystal build src/main.cr --debug -o bin/crimson
+
 targets:
   crimson:
     main: src/main.cr
