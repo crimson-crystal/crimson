@@ -1,11 +1,11 @@
 module Crimson::Commands
   class List < Base
-    private class Result
+    private struct Result
       getter version : String
-      property! alias : String
-      property path : String?
+      getter alias : String?
+      getter path : String?
 
-      def initialize(@version)
+      def initialize(@version, @alias, @path)
       end
     end
 
@@ -26,45 +26,45 @@ module Crimson::Commands
       return if installed.empty?
 
       unless options.has?("alias") || options.has?("path")
-        installed.each { |version| stdout << version << '\n' }
+        installed.each { |version| puts version }
         return
       end
 
       config = Config.load
-      _alias = options.has? "alias"
-      max_alias = 0
-      path = options.has? "path"
-      results = installed.map { |version| Result.new version.to_s }
-
-      if _alias && !config.aliases.empty?
+      if options.has? "alias"
         aliases = config.aliases.invert
-        if path
-          max_alias = 2 + aliases.values.max_of &.size
-        end
-
-        results.each do |result|
-          if name = aliases[result.version]?
-            result.alias = name
-          end
-        end
       end
 
-      if path
-        results.each do |result|
-          result.path = (ENV::LIBRARY_CRYSTAL / result.version).to_s
+      with_path = options.has? "path"
+      max_name = max_alias = 0
+      results = [] of Result
+
+      installed.each do |version|
+        version = version.to_s
+        max_name = version.size if version.size > max_name
+        if alias_name = aliases.try &.[version]?
+          max_alias = alias_name.size if alias_name.size > max_alias
         end
+
+        results << Result.new(
+          version,
+          alias_name,
+          with_path ? (ENV::LIBRARY_CRYSTAL / version).to_s : nil,
+        )
       end
+
+      max_name += 2
+      max_alias += 2 if options.has? "alias"
 
       results.each do |result|
-        result.version.ljust stdout, 8
-        stdout << result.alias if result.alias?
-        if path
-          if _alias
-            if result.alias?
-              stdout << " " * (max_alias - result.alias.size)
-            else
-              stdout << " " * max_alias
-            end
+        result.version.ljust stdout, max_name
+        stdout << result.alias
+
+        if with_path
+          if alias_name = result.alias
+            stdout << " " * (max_alias - alias_name.size)
+          else
+            stdout << " " * max_alias
           end
           stdout << result.path
         end
