@@ -22,7 +22,7 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-      installed = ENV.get_installed_versions.reverse!
+      installed = ENV.installed_versions.reverse!
       return if installed.empty?
 
       unless options.has?("alias") || options.has?("path")

@@ -46,7 +46,7 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
       initial = config.current || config.default
-      versions = ENV.get_installed_versions.reverse!
+      versions = ENV.installed_versions.reverse!
       exit_program if versions.empty?
 
       if from = options.get?("from").try &.as_s
