@@ -2,7 +2,7 @@ name: Nightly
 
 on:
   schedule:
-    - cron: 0 6 * * 6
+    - cron: 0 7 * * 0
 
 permissions:
   actions: write
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
@@ -25,13 +25,13 @@ jobs:
 
       - name: Compile Binaries
         run: |
-          crystal build src/main.cr -o crimson
+          crystal build src/main.cr --debug -o crimson
           tar -zcf crimson-nightly-linux-x86_64.tar.gz crimson
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: crimson
+          name: crimson-linux
           path: |
             crimson
             crimson-nightly-linux-x86_64.tar.gz
@@ -41,7 +41,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
@@ -53,17 +53,17 @@ jobs:
 
       - name: Compile Binaries
         run: |
-          crystal build src\main.cr -o crimson.exe
+          crystal build src\main.cr --debug -o crimson.exe
           $compress = @{
-            Path = "crimson.exe", "crimson.pdb"
+            Path = "crimson.exe", "crimson.pdb", "*.dll"
             DestinationPath = "crimson-nightly-windows-x86_64-msvc.zip"
           }
           Compress-Archive @compress
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: crimson
+          name: crimson-windows
           path: |
             crimson.exe
             crimson.pdb
@@ -74,16 +74,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts/
+          pattern: crimson-*
+          merge-multiple: true
 
       - name: Prepare Artifacts
         run: |
-          mv artifacts/crimson/* .
+          mv artifacts/* .
           sha256sum crimson crimson.exe crimson.pdb > checksums.txt
 
       - name: Create Release

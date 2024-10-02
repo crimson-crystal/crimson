@@ -5,15 +5,16 @@ on:
     tags:
       - "v*"
 
+permissions:
+  actions: write
+  contents: write
+
 jobs:
   linux:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
@@ -25,23 +26,23 @@ jobs:
 
       - name: Compile Binaries
         run: |
-          crystal build src/main.cr --no-debug -o crimson --release
-          sha256sum crimson > checksums.txt
-          tar -zcf crimson-${{ github.ref_name }}-linux-x86_64.tar.gz crimson checksums.txt
+          crystal build src/main.cr --no-debug --release -o crimson
+          tar -zcf crimson-${{ github.ref_name }}-linux-x86_64.tar.gz crimson
 
-      - name: Upload Package
-        run: |
-          gh release create ${{ github.ref_name }} -dt ${{ github.ref_name }} --verify-tag
-          gh release upload ${{ github.ref_name }} crimson-${{ github.ref_name }}-linux-x86_64.tar.gz
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: crimson-linux
+          path: |
+            crimson
+            crimson-${{ github.ref_name }}-linux-x86_64.tar.gz
 
   windows:
+    needs: linux
     runs-on: windows-latest
-    strategy:
-      fail-fast: true
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
@@ -53,11 +54,46 @@ jobs:
 
       - name: Compile Binaries
         run: |
-          crystal build src\main.cr --no-debug -o crimson.exe --release
-          Get-FileHash crimson.exe | Select-Object Hash | Format-Table -HideTableHeaders | Out-File checksums.txt
-          Compress-Archive crimson.exe crimson-${{ github.ref_name }}-windows-x86_64-msvc.zip checksums.txt
+          crystal build src\main.cr --no-debug --release -o crimson.exe
+          $compress = @{
+            Path = "crimson.exe", "*.dll"
+            DestinationPath = "crimson-${{ github.ref_name }}-windows-x86_64-msvc.zip"
+          }
+          Compress-Archive @compress
 
-      - name: Upload Package
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: crimson-windows
+          path: |
+            crimson.exe
+            crimson-${{ github.ref_name }}-windows-x86_64-msvc.zip
+
+  release:
+    needs: windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: crimson-*
+          merge-multiple: true
+
+      - name: Prepare Artifacts
         run: |
-          gh release create ${{ github.ref_name }} -dt ${{ github.ref_name }} --verify-tag
+          mv artifacts/* .
+          sha256sum crimson crimson.exe > checksums.txt
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        run: |
+          gh release create ${{ github.ref_name }} -pt ${{ github.ref_name }}
+          gh release upload ${{ github.ref_name }} checksums.txt
+          gh release upload ${{ github.ref_name }} crimson-${{ github.ref_name }}-linux-x86_64.tar.gz
           gh release upload ${{ github.ref_name }} crimson-${{ github.ref_name }}-windows-x86_64-msvc.zip
