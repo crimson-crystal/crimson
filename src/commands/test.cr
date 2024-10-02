@@ -11,7 +11,8 @@ module Crimson::Commands
 
         If you only want to test a subset of versions then you can specify the '--from'
         flag with a version to start from and/or the '--to' flag with a version to stop
-        at.
+        at. You can also include and exclude specific versions by specifying the
+        '--include' and '--exclude' flags respectively which can take multiple arguments.
 
         The command will complete when all selected versions are tested, but this can be
         changed to stop at the first failure by specifying the '--fail-first' flag. The
@@ -21,13 +22,16 @@ module Crimson::Commands
         DESC
 
       add_usage "test [-F|--fail-first] [-o|--order <asc|desc|random>] [--from <version>]" \
-                "\n\t[--to <version>] [-p|--progress] <args...>"
+                "\n\t[--to <version>] [-i|--include <version>...] [-e|--exclude <version>...]" \
+                "\n\t[-p|--progress] [--] <args...>"
 
       add_argument "args", description: "the command to test", multiple: true, required: true
       add_option 'F', "fail-first", description: "exit early at the first failed test"
       add_option 'o', "order", description: "the order to execute versions in", type: :single
       add_option "from", description: "the version to start testing from", type: :single
       add_option "to", description: "the version to stop testing at", type: :single
+      add_option 'i', "include", description: "a version to include", type: :multiple
+      add_option 'e', "exclude", description: "a version to exclude", type: :multiple
       add_option 'p', "progress", description: "print output after each test"
     end
 
@@ -49,8 +53,8 @@ module Crimson::Commands
       exit_program if versions.empty?
 
       if from = options.get?("from").try &.as_s
-        if version = config.aliases[from]?
-          from = version
+        if ver = config.aliases[from]?
+          from = ver
         end
 
         from = SemanticVersion.parse from
@@ -58,12 +62,47 @@ module Crimson::Commands
       end
 
       if to = options.get?("to").try &.as_s
-        if version = config.aliases[to]?
-          to = version
+        if ver = config.aliases[to]?
+          to = ver
         end
 
         to = SemanticVersion.parse to
         versions.select! { |v| to <= v }
+      end
+
+      unknown = Set(String).new
+
+      if excludes = options.get?("exclude").try &.as_a
+        excludes.each do |ex|
+          if ver = config.aliases[ex]?
+            ex = ver
+          end
+
+          if ENV.installed? ex
+            versions.delete SemanticVersion.parse ex
+          else
+            unknown << ex
+          end
+        end
+      end
+
+      if includes = options.get?("include").try &.as_a
+        includes.each do |inc|
+          if ver = config.aliases[inc]?
+            inc = ver
+          end
+
+          if ENV.installed? inc
+            versions << SemanticVersion.parse inc
+          else
+            unknown << inc
+          end
+        end
+      end
+
+      versions.uniq!
+      unless unknown.empty?
+        warn %(Skipping unknown versions: #{unknown.join ", "})
       end
 
       if order = options.get?("order").try &.as_s.downcase
