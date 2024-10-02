@@ -69,6 +69,14 @@ module Crimson::Commands
         fatal "Missing 'lib' directory for compiler" unless Dir.exists? path / "lib"
         fatal "Missing 'src' directory for compiler" unless Dir.exists? path / "src"
 
+        installed = false
+        dest = uninitialized Path
+
+        Process.on_terminate do |_|
+          FileUtils.rm_rf dest if dest && !installed
+          exit 1
+        end
+
         Dir.mkdir_p dest = ENV::LIBRARY_CRYSTAL / version
 
         if options.has? "link"
@@ -143,6 +151,8 @@ module Crimson::Commands
           STDERR << "\e[F\e[?25h\e[2K"
           puts "#{count} files copied"
         end
+
+        installed = true
 
         if value = options.get?("alias").try &.as_s
           puts "Setting version alias"
