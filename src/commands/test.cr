@@ -49,13 +49,21 @@ module Crimson::Commands
       exit_program if versions.empty?
 
       if from = options.get?("from").try &.as_s
+        if version = config.aliases[from]?
+          from = version
+        end
+
         from = SemanticVersion.parse from
-        versions.reject! { |v| v < from }
+        versions.reject! { |v| from < v }
       end
 
       if to = options.get?("to").try &.as_s
+        if version = config.aliases[to]?
+          to = version
+        end
+
         to = SemanticVersion.parse to
-        versions.select! { |v| v <= to }
+        versions.select! { |v| to <= v }
       end
 
       if order = options.get?("order").try &.as_s.downcase
