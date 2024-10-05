@@ -5,27 +5,25 @@ module Crimson::Commands
       @summary = "install a version of Crystal"
       @description = <<-DESC
         Installs a version of Crystal. If no version is specified, the latest available
-        version is selected. Available versions are cached on your system but can be
-        fetched from the Crystal API by specifying the '--fetch' option.
+        version is selected. Versions are cached on the system but will be fetched from
+        the GitHub API if a given version isn't cached or no version is specified.
         DESC
 
       add_alias "in"
-      add_usage "install [-a|--alias <name>] [-d|--default] [-f|--fetch] [-s|--switch] [version]"
+      add_usage "install [-a|--alias <name>] [-d|--default] [-s|--switch] [version]"
 
       add_argument "version", description: "the version to install"
       add_option 'a', "alias", description: "set the alias of the version", type: :single
       add_option 'd', "default", description: "set the version as default"
-      add_option 'f', "fetch", description: "fetch versions from the api"
       add_option 's', "switch", description: "switch the available version on the system"
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
 
-      version = arguments.get?("version").try &.as_s
-      unless version
+      unless version = arguments.get?("version").try &.as_s
         puts "Fetching available versions"
-        version = ENV.get_available_versions(options.has?("fetch"))[0]
+        version = ENV.fetch_versions[0].to_s
       end
 
       if ENV.installed? version
@@ -34,7 +32,7 @@ module Crimson::Commands
         fatal "To use it run '#{command}'"
       end
 
-      unless ENV.get_available_versions(false).includes? version
+      unless ENV.available_versions.includes? version
         fatal "Unknown Crystal version: #{version}"
       end
 

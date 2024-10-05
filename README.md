@@ -164,10 +164,6 @@ p ([] of Int32).insert_all(0, [1, 2, 3])
 
 Removing Crystal versions is as simple as `crimson remove <version>` (or `crimson rm`), and you can use the alias in place of the version.
 
-### Side Notes
-
-Crimson caches available versions locally from the [Crystal API](https://crystal-lang.org/api/versions.json) so if newer releases don't appear as available via Crimson, run the install command with the `-f`/`--fetch` flag which will force-check the API and cache newer versions. If that doesn't work, check the API as it's likely it hasn't been updated to include the newer versions yet.
-
 ## Motivation
 
 Crimson is designed to be like any other application versioning manager using standardised design patterns to ensure consistency and flexibility. It _is_ intended for people that work with multiple versions of Crystal and/or need to ensure backwards compatibility for their projects. It is _not_ intended to be a replacement for system package managers or other Crystal distribution sources (although you can use it for that if you wish).

@@ -2,33 +2,26 @@ module Crimson::ENV
   LIBRARY_BIN     = LIBRARY / "bin"
   LIBRARY_CRYSTAL = LIBRARY / "crystal"
 
+  class_getter available_versions : Array(String) { raise "" }
+
   def self.installed?(version : String) : Bool
     Dir.exists? LIBRARY_CRYSTAL / version
-  end
-
-  @@versions = [] of String
-
-  def self.get_available_versions(force : Bool) : Array(String)
-    return @@versions unless @@versions.empty?
-    unless force
-      if File.exists? path = LIBRARY / "versions.txt"
-        return @@versions = File.read_lines path
-      end
-    end
-
-    res = Crest.get "https://api.github.com/repos/crystal-lang/crystal/releases"
-    data = JSON.parse res.body
-
-    @@versions = data.as_a.map &.["tag_name"].as_s
-    File.write LIBRARY / "versions.txt", @@versions.join '\n'
-
-    @@versions
   end
 
   def self.installed_versions : Array(SemanticVersion)
     Dir.children(LIBRARY_CRYSTAL).select do |child|
       File.directory? LIBRARY_CRYSTAL / child
     end.map { |v| SemanticVersion.parse(v) }.sort!
+  end
+
+  def self.fetch_versions : Array(String)
+    res = Crest.get "https://api.github.com/repos/crystal-lang/crystal/releases"
+    data = JSON.parse res.body
+
+    @@available_versions = data.as_a.map &.["tag_name"].as_s
+    File.write LIBRARY / "versions.txt", available_versions.join '\n'
+
+    available_versions
   end
 
   {% for name in %w[CRYSTAL SHARDS] %}
