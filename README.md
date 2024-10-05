@@ -121,8 +121,8 @@ You can also easily switch between your current and default version using `crims
 
 If you have a local Crystal compiler environment, you can import it into Crimson's environment using `crimson import`. This command has a few requirements:
 
-- The `bin/`, `lib/` and `src/` directories must be present
-- Crystal must already be compiled and its binaries readily available in the `bin/` directory
+- The `.build/`, `lib/` and `src/` directories must be present
+- Crystal must already be compiled and its binaries readily available in the `.build/` directory
 
 To ensure Crimson's cross-platform compatibility and platform-specific system requirements, Crystal cannot be built using this command. The install version is obtained from the compiler during the import process. If that version is already installed, the command will fail. To work around this you can specify the `-R`/`--rename` flag with a version name to be imported under.
 
@@ -186,4 +186,4 @@ Crimson is designed to be like any other application versioning manager using st
 
 This repository is managed under the Mozilla Public License v2.
 
-© 2023 devnote-dev
+© 2023-present devnote-dev

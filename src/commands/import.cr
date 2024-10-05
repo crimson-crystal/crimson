@@ -7,7 +7,7 @@ module Crimson::Commands
         Imports a local Crystal compiler from the file system at a given directory path.
 
         Note that this command DOES NOT build the compiler at the given path, you should
-        compile Crystal before importing with Crimson. The 'bin', 'lib' and 'src'
+        compile Crystal before importing with Crimson. The '.build', 'lib' and 'src'
         directories are expected to be available in order to import the compiler.
 
         The install version is obtained from the compiler during the import process.
@@ -38,24 +38,24 @@ module Crimson::Commands
         fatal "Path does not exist or is not a directory" unless Dir.exists? path
 
         {% if flag?(:win32) %}
-          unless File.exists?(path / "bin" / "crystal.exe") && File.exists?(path / "bin" / "crystal.pdb")
+          unless File.exists?(path / ".build" / "crystal.exe") && File.exists?(path / ".build" / "crystal.pdb")
             error "Crystal binaries not found"
             fatal "Crystal must be compiled via cmake before importing"
           end
 
           version = options.get?("rename").try(&.as_s) || begin
-            Process.run (path / "bin" / "crystal.exe").to_s, ["version"] do |process|
+            Process.run (path / ".build" / "crystal.exe").to_s, ["version"] do |process|
               process.output.gets('[').as(String).split[1]
             end
           end
         {% else %}
-          unless File.exists?(path / "bin" / "crystal") && File.executable?(path / "bin" / "crystal")
+          unless File.exists?(path / ".build" / "crystal") && File.executable?(path / ".build" / "crystal")
             error "Crystal binary not found"
             fatal "Crystal must be compiled via make before importing"
           end
 
           version = options.get?("rename").try(&.as_s) || begin
-            Process.run (path / "bin" / "crystal").to_s, ["version"] do |process|
+            Process.run (path / ".build" / "crystal").to_s, ["version"] do |process|
               process.output.gets('[').as(String).split[1]
             end
           end
@@ -63,7 +63,7 @@ module Crimson::Commands
 
         if ENV.installed? version
           error "Crystal version #{version} is already installed"
-          fatal "If you wish to override the set version, rerun with '--version'"
+          fatal "If you wish to override the set version, rerun with '--rename'"
         end
 
         fatal "Missing 'lib' directory for compiler" unless Dir.exists? path / "lib"
@@ -88,14 +88,14 @@ module Crimson::Commands
 
           puts "Linking binaries..."
           {% if flag?(:win32) %}
-            File.symlink path / "bin" / "crystal.exe", dest / "crystal.exe"
-            File.symlink path / "bin" / "crystal.pdb", dest / "crystal.pdb"
+            File.symlink path / ".build" / "crystal.exe", dest / "crystal.exe"
+            File.symlink path / ".build" / "crystal.pdb", dest / "crystal.pdb"
 
-            Dir.glob(path / "bin" / "*.dll").each do |dll|
+            Dir.glob(path / ".build" / "*.dll").each do |dll|
               File.symlink dll, dest / Path[dll].basename
             end
           {% else %}
-            File.symlink path / "bin" / "crystal", dest / "crystal"
+            File.symlink path / ".build" / "crystal", dest / "crystal"
           {% end %}
 
           File.touch path / "LINK", Time.utc
@@ -104,14 +104,14 @@ module Crimson::Commands
           puts "Copying binaries to destination..."
 
           {% if flag?(:win32) %}
-            File.copy path / "bin" / "crystal.exe", dest / "crystal.exe"
-            File.copy path / "bin" / "crystal.pdb", dest / "crystal.pdb"
+            File.copy path / ".build" / "crystal.exe", dest / "crystal.exe"
+            File.copy path / ".build" / "crystal.pdb", dest / "crystal.pdb"
 
-            Dir.glob(path / "bin" / "*.dll").each do |dll|
+            Dir.glob(path / ".build" / "*.dll").each do |dll|
               File.copy dll, dest / Path[dll].basename
             end
           {% else %}
-            File.copy path / "bin" / "crystal", dest / "crystal"
+            File.copy path / ".build" / "crystal", dest / "crystal"
           {% end %}
 
           puts "Copying library files to destination..."
