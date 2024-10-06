@@ -30,11 +30,11 @@ jobs:
 
       - name: Build Debian Package
         run: |
-          RNAME=crimson_nightly-1_amd64
+          RNAME=crimson_1.0.0-nightly-1_amd64
           mkdir -p build/$RNAME/DEBIAN build/$RNAME/usr/bin
 
           echo "Package: crimson
-          Version: nightly
+          Version: 1.0.0-nightly
           Maintainer: Devaune Whittle <https://github.com/devnote-dev>
           Architecture: amd64
           Homepage: https://github.com/crimson-crystal/crimson
@@ -52,7 +52,7 @@ jobs:
           name: crimson-linux
           path: |
             crimson
-            crimson_nightly-1_amd64.deb
+            crimson_1.0.0-nightly-1_amd64.deb
             crimson-nightly-linux-x86_64.tar.gz
 
   windows:
