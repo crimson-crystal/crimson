@@ -122,6 +122,6 @@ jobs:
           gh release view nightly &>/dev/null && gh release delete nightly -y
           gh release create nightly -pt Nightly --notes "Nightly release for v${{ env.VERSION }} ($(date +%F))."
           gh release upload nightly checksums.txt
-          gh release update nightly crimson_${{ env.VERSION }}-nightly-1_amd64.deb
+          gh release upload nightly crimson_${{ env.VERSION }}-nightly-1_amd64.deb
           gh release upload nightly crimson-${{ env.VERSION }}-nightly-linux-x86_64.tar.gz
           gh release upload nightly crimson-${{ env.VERSION }}-nightly-windows-x86_64-msvc.zip
