@@ -12,6 +12,9 @@ permissions:
   actions: write
   contents: write
 
+env:
+  VERSION: 1.0.0
+
 jobs:
   linux:
     runs-on: ubuntu-latest
@@ -30,15 +33,15 @@ jobs:
       - name: Compile Binaries
         run: |
           crystal build src/main.cr --debug -o crimson
-          tar -zcf crimson-nightly-linux-x86_64.tar.gz crimson
+          tar -zcf crimson-${{ env.VERSION }}-nightly-linux-x86_64.tar.gz crimson
 
       - name: Build Debian Package
         run: |
-          RNAME=crimson_1.0.0-nightly-1_amd64
+          RNAME=crimson_${{ env.VERSION }}-nightly-1_amd64
           mkdir -p build/$RNAME/DEBIAN build/$RNAME/usr/bin
 
           echo "Package: crimson
-          Version: 1.0.0-nightly
+          Version: ${{ env.VERSION }}-nightly
           Maintainer: Devaune Whittle <https://github.com/devnote-dev>
           Architecture: amd64
           Homepage: https://github.com/crimson-crystal/crimson
@@ -56,8 +59,8 @@ jobs:
           name: crimson-linux
           path: |
             crimson
-            crimson_1.0.0-nightly-1_amd64.deb
-            crimson-nightly-linux-x86_64.tar.gz
+            crimson_${{ env.VERSION }}-nightly-1_amd64.deb
+            crimson-${{ env.VERSION }}-nightly-linux-x86_64.tar.gz
 
   windows:
     needs: linux
@@ -79,7 +82,7 @@ jobs:
           crystal build src\main.cr --debug -o crimson.exe
           $compress = @{
             Path = "crimson.exe", "crimson.pdb", "*.dll"
-            DestinationPath = "crimson-nightly-windows-x86_64-msvc.zip"
+            DestinationPath = "crimson-${{ env.VERSION }}-nightly-windows-x86_64-msvc.zip"
           }
           Compress-Archive @compress
 
@@ -90,7 +93,7 @@ jobs:
           path: |
             crimson.exe
             crimson.pdb
-            crimson-nightly-windows-x86_64-msvc.zip
+            crimson-${{ env.VERSION }}-nightly-windows-x86_64-msvc.zip
 
   release:
     needs: windows
@@ -109,7 +112,7 @@ jobs:
       - name: Prepare Artifacts
         run: |
           mv artifacts/* .
-          sha256sum crimson crimson.exe crimson.pdb > checksums.txt
+          sha256sum crimson crimson.exe crimson.pdb crimson_${{ env.VERSION }}-nightly-1_amd64.deb > checksums.txt
 
       - name: Create Release
         env:
@@ -117,7 +120,8 @@ jobs:
 
         run: |
           gh release view nightly &>/dev/null && gh release delete nightly -y
-          gh release create nightly -pt Nightly --notes "Nightly release for $(date +%F)."
+          gh release create nightly -pt Nightly --notes "Nightly release for v${{ env.VERSION }} ($(date +%F))."
           gh release upload nightly checksums.txt
-          gh release upload nightly crimson-nightly-linux-x86_64.tar.gz
-          gh release upload nightly crimson-nightly-windows-x86_64-msvc.zip
+          gh release update nightly crimson_${{ env.VERSION }}-nightly-1_amd64.deb
+          gh release upload nightly crimson-${{ env.VERSION }}-nightly-linux-x86_64.tar.gz
+          gh release upload nightly crimson-${{ env.VERSION }}-nightly-windows-x86_64-msvc.zip
