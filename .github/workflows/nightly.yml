@@ -1,6 +1,10 @@
 name: Nightly
 
 on:
+  push:
+    tags:
+      - nightly
+
   schedule:
     - cron: 0 7 * * 0
 
