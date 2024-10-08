@@ -49,7 +49,7 @@ module Crimson::Commands
             end
           end
         {% else %}
-          unless File.exists?(path / ".build" / "crystal") && File.executable?(path / ".build" / "crystal")
+          unless File.exists?(path / ".build" / "crystal") && File::Info.executable?(path / ".build" / "crystal")
             error "Crystal binary not found"
             fatal "Crystal must be compiled via make before importing"
           end
