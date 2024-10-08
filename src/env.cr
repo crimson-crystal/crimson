@@ -45,12 +45,10 @@ module Crimson::ENV
   {% end %}
 end
 
-{% if flag?(:win32) %}
-  require "./env/win32"
-{% elsif flag?(:darwin) %}
-  require "./env/darwin"
-{% elsif flag?(:unix) %}
-  require "./env/linux"
-{% else %}
+require "./env/win32"
+require "./env/darwin"
+require "./env/linux"
+
+{% if !flag?(:win32) && !flag?(:darwin) && !flag?(:linux) %}
   {% raise "unsupported platform target" %}
 {% end %}
