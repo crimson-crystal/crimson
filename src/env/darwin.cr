@@ -1,3 +1,5 @@
+{% skip_file unless flag?(:darwin) %}
+
 require "compress/gzip"
 require "crystar"
 

@@ -1,3 +1,5 @@
+{% skip_file unless flag?(:win32) %}
+
 require "compress/zip"
 require "crystal/system/win32/visual_studio"
 require "crystal/system/win32/windows_sdk"
