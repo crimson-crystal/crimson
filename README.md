@@ -51,14 +51,14 @@ See the [releases page](https://github.com/crimson-crystal/crimson/releases) for
 #### Linux
 
 ```sh
-curl -L https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-1.0.0-nightly-linux-x86_64.tar.gz -o crimson.tar.gz
+curl -L https://github.com/crimson-crystal/crimson/releases/download/1.0.0/crimson-1.0.0-linux-x86_64.tar.gz -o crimson.tar.gz
 tar -xvf crimson.tar.gz -C /usr/local/bin
 ```
 
 #### Windows (PowerShell)
 
 ```ps1
-Invoke-WebRequest "https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-1.0.0-nightly-windows-x86_64-msvc.zip" -OutFile crimson.zip
+Invoke-WebRequest "https://github.com/crimson-crystal/crimson/releases/download/1.0.0/crimson-1.0.0-windows-x86_64-msvc.zip" -OutFile crimson.zip
 Expand-Archive .\crimson.zip .
 ```
 
