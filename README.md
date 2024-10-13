@@ -16,13 +16,6 @@
 
 ## Installation
 
-<!-- ### MacOS
-
-```
-brew tap crimson-crystal/distribution https://github.com/crimson-crystal/distribution
-brew install crimson
-``` -->
-
 <!-- ### Linux
 
 ```sh
@@ -35,6 +28,14 @@ apk add crimson
 # Arch
 pacman -S crimson
 ``` -->
+
+### Homebrew (Linux/Windows)
+
+```
+brew tap crimson/distribution https://github.com/crimson-crystal/distribution
+brew install crimson
+brew uninstall crystal
+```
 
 ### Windows
 
@@ -50,14 +51,14 @@ See the [releases page](https://github.com/crimson-crystal/crimson/releases) for
 #### Linux
 
 ```sh
-curl -L https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-nightly-linux-x86_64.tar.gz -o crimson.tar.gz
+curl -L https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-1.0.0-nightly-linux-x86_64.tar.gz -o crimson.tar.gz
 tar -xvf crimson.tar.gz -C /usr/local/bin
 ```
 
 #### Windows (PowerShell)
 
 ```ps1
-Invoke-WebRequest "https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-nightly-windows-x86_64-msvc.zip" -OutFile crimson.zip
+Invoke-WebRequest "https://github.com/crimson-crystal/crimson/releases/download/nightly/crimson-1.0.0-nightly-windows-x86_64-msvc.zip" -OutFile crimson.zip
 Expand-Archive .\crimson.zip .
 ```
 
@@ -66,7 +67,7 @@ Expand-Archive .\crimson.zip .
 
 ### From Source
 
-[Crystal](https://crystal-lang.org) version 1.9.2 or higher is required to build Crimson. Make sure to add the `bin/` directory to `PATH` or move the Crimson binaries to a directory in `PATH`.
+[Crystal](https://crystal-lang.org) version 1.13.0 or higher is required to build Crimson. Make sure to add the `bin/` directory to `PATH` or move the Crimson binaries to a directory in `PATH`.
 
 ```sh
 git clone https://github.com/crimson-crystal/crimson
