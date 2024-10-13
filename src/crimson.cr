@@ -11,7 +11,7 @@ require "./config"
 require "./env"
 
 module Crimson
-  VERSION = "0.1.0"
+  VERSION = "1.0.0"
 
   BUILD_DATE = {% if flag?(:win32) %}
                  {{ `powershell.exe -NoProfile Get-Date -Format "yyyy-MM-dd"`.stringify.chomp }}
