@@ -22,6 +22,7 @@ module Crimson::Commands
     end
 
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      config = Config.load
       installed = ENV.installed_versions.reverse!
       return if installed.empty?
 
@@ -30,7 +31,6 @@ module Crimson::Commands
         return
       end
 
-      config = Config.load
       if options.has? "alias"
         aliases = config.aliases.invert
       end
@@ -70,12 +70,6 @@ module Crimson::Commands
         end
         stdout << '\n'
       end
-    rescue File::NotFoundError
-      error "Crimson config not found"
-      fatal "Run '#{"crimson setup".colorize.bold}' to create"
-    rescue INI::ParseException
-      error "Cannot parse Crimson config"
-      fatal "Run '#{"crimson setup".colorize.bold}' to restore"
     end
   end
 end

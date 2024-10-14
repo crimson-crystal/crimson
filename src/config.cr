@@ -1,5 +1,18 @@
 module Crimson
   class Config
+    class Error < Exception
+      enum Code
+        NotFound
+        CantParse
+        CantSave
+      end
+
+      getter code : Code
+
+      def initialize(@code, @cause = nil)
+      end
+    end
+
     property current : String?
     property default : String?
     property aliases : Hash(String, String)
@@ -16,6 +29,10 @@ module Crimson
 
         new current, default, aliases
       end
+    rescue File::NotFoundError
+      raise Error.new :not_found
+    rescue INI::ParseException
+      raise Error.new :cant_parse
     end
 
     def initialize(@current, @default, aliases = nil)
@@ -29,6 +46,8 @@ module Crimson
           aliases: @aliases,
         }
       end
+    rescue ex
+      raise Error.new :cant_save, ex
     end
   end
 end

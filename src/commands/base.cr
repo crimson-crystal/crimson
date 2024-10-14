@@ -32,11 +32,23 @@ module Crimson::Commands
         error ex.to_s
         command = "crimson #{self.name} --help".colorize.bold
         error "See '#{command}' for more information"
+      when Config::Error
+        case ex.code
+        in .not_found?
+          error "Crimson config not found"
+          error "Run '#{"crimson setup".colorize.bold}' to create"
+        in .cant_parse?
+          error "Cannot parse Crimson config"
+          error "Run '#{"crimson setup".colorize.bold}' to restore"
+        in .cant_save?
+          error "Cannot save Crimson config:"
+          error ex.cause
+        end
       else
         error "Unexpected exception:"
         error ex.to_s
         error "Please report this on the Crimson GitHub issues:"
-        error "https://github.com/devnote-dev/crimson/issues"
+        error "https://github.com/crimson-crystal/crimson/issues"
 
         if @verbose
           trace = ex.backtrace || %w[???]
