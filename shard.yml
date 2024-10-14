@@ -3,7 +3,7 @@ description: A Crystal Version Manager
 authors:
   - Devaune Whittle <https://github.com/devnote-dev>
 
-version: 1.0.0
+version: 1.0.1
 crystal: '>= 1.13.0'
 license: MPL
 repository: https://github.com/crimson-crystal/crimson
