@@ -34,12 +34,15 @@ module Crimson::Commands
 
       begin
         _ = Config.load
-      rescue File::NotFoundError
-        puts "Crimson config not found; creating"
-        Config.new(nil, nil).save
-      rescue INI::ParseException
-        warn "Config is in an invalid format; overwriting"
-        Config.new(nil, nil).save
+      rescue ex : Config::Error
+        case ex.code
+        when .not_found?
+          puts "Crimson config not found; creating"
+          Config.new(nil, nil).save
+        when .cant_parse?
+          warn "Config is in an invalid format; overwriting"
+          Config.new(nil, nil).save
+        end
       end
 
       if path = Process.find_executable "crystal"
@@ -54,7 +57,11 @@ module Crimson::Commands
         Dir.mkdir_p ENV::LIBRARY_BIN
       end
 
-      # puts "Checking executable paths"
+      unless Dir.exists? ENV::LIBRARY_CRYSTAL
+        puts "Creating executables path"
+        Dir.mkdir_p ENV::LIBRARY_CRYSTAL
+      end
+
       ENV.setup_executable_paths
       return if options.has? "skip-dependencies"
 
