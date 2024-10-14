@@ -1,4 +1,4 @@
-{% skip_file unless flag?(:unix) && !flag?(:darwin) %}
+{% skip_file if !flag?(:unix) || flag?(:darwin) %}
 
 require "compress/gzip"
 require "crystar"
