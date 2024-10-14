@@ -21,8 +21,11 @@ module Crimson::Commands
     def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
       config = Config.load
 
-      unless version = arguments.get?("version").try &.as_s
-        puts "Fetching available versions"
+      puts "Fetching available versions..."
+      if req = arguments.get?("version").try(&.as_s)
+        version = ENV.fetch_from_version req
+        fatal "Unknown Crystal version: #{req}" unless version
+      else
         version = ENV.fetch_versions[0].to_s
       end
 
@@ -30,10 +33,6 @@ module Crimson::Commands
         error "Crystal version #{version} is already installed"
         command = "crimson switch #{version}".colorize.bold
         fatal "To use it run '#{command}'"
-      end
-
-      unless ENV.available_versions.includes? version
-        fatal "Unknown Crystal version: #{version}"
       end
 
       {% if flag?(:win32) %}
